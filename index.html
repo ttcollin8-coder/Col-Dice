@@ -1,19 +1,13 @@
-<!DOCTYPE html><html lang="de">
-<head>
-<meta charset="UTF-8">
+<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>COL DICE</title><style>
-*{box-sizing:border-box}
-
-html,body{
+*{box-sizing:border-box}html,body{
 margin:0;
 min-height:100%;
 font-family:Arial,Helvetica,sans-serif;
 color:white;
 background:radial-gradient(circle at top,#075d9c 0%,#031b32 35%,#010811 75%,#000308 100%);
-}
-
-body{padding:10px;overflow-x:hidden}
+}body{padding:10px;overflow-x:hidden}
 button,input{font:inherit}
 button{cursor:pointer}
 
@@ -648,6 +642,23 @@ font-size:.55rem;
 font-weight:bold;
 }
 
+.dice-counter-screen{
+touch-action:none;
+}
+
+.dice-counter-card{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+cursor:grab;
+touch-action:none;
+}
+
+.dice-counter-card.dragging{
+cursor:grabbing;
+}
+
 .dice-counter-list{
 display:flex;
 flex-direction:column;
@@ -685,6 +696,12 @@ font-size:1.5rem;
 font-weight:bold;
 }
 
+.dice-counter-number.negative,
+.dice-counter-number.negative span{
+color:#ff1744 !important;
+text-shadow:0 0 10px #ff1744,0 0 20px #ff1744 !important;
+}
+
 .dice-counter-controls{
 display:flex;
 gap:6px;
@@ -698,6 +715,11 @@ border-radius:7px;
 color:white;
 background:rgba(0,100,200,.35);
 font-weight:bold;
+}
+
+.dice-counter-controls button:hover{
+background:#008cff;
+box-shadow:0 0 10px #00aaff;
 }
 
 .admin-card{
@@ -811,328 +833,187 @@ background:rgba(180,0,40,.35);
 .colors{grid-template-columns:repeat(3,1fr)}
 .brainrot-card{width:140px}
 }
-</style></head><body><div id="loginScreen">
+</style></head><body>
+
+<div id="loginScreen">
 <div class="login-card">
 <div class="login-title">COL DICE</div>
-<div class="login-subtitle">ACCOUNT LOGIN</div><input id="loginUsername" class="login-input" placeholder="Benutzername">
-<input id="loginPassword" class="login-input" type="password" placeholder="Passwort"><button class="login-button" onclick="login()">LOGIN</button>
+<div class="login-subtitle">ACCOUNT LOGIN</div>
+<input id="loginUsername" class="login-input" placeholder="Benutzername">
+<input id="loginPassword" class="login-input" type="password" placeholder="Passwort">
+<button class="login-button" onclick="login()">LOGIN</button>
 <button class="register-button" onclick="showRegister()">ACCOUNT ERSTELLEN</button>
-
 <div id="loginError" class="login-error"></div>
 </div>
 </div><div id="registerScreen">
 <div class="login-card">
 <div class="login-title">REGISTER</div>
-<div class="login-subtitle">CREATE YOUR COL DICE ACCOUNT</div><input id="registerUsername" class="login-input" placeholder="Benutzername">
+<div class="login-subtitle">CREATE YOUR COL DICE ACCOUNT</div>
+<input id="registerUsername" class="login-input" placeholder="Benutzername">
 <input id="registerPassword" class="login-input" type="password" placeholder="Passwort">
-<input id="registerPassword2" class="login-input" type="password" placeholder="Passwort wiederholen"><button class="login-button" onclick="registerAccount()">REGISTRIEREN</button>
+<input id="registerPassword2" class="login-input" type="password" placeholder="Passwort wiederholen">
+<button class="login-button" onclick="registerAccount()">REGISTRIEREN</button>
 <button class="register-button" onclick="showLogin()">ZURÜCK ZUM LOGIN</button>
-
 <div id="registerError" class="login-error"></div>
 </div>
 </div><div id="chancesScreen">
-<button class="back-button" onclick="closeChances()">←</button><div class="chances-card">
+<button class="back-button" onclick="closeChances()">←</button>
+<div class="chances-card">
 <div class="chances-title">WIN CHANCES</div>
-<div class="chances-subtitle">COL DICE PROBABILITY SYSTEM</div><div class="chance-row win">
-<span>1× FARBE</span>
-<strong>38,58%</strong>
-</div><div class="chance-row recolor">
-<span>2× FARBE</span>
-<strong>38,58%</strong>
-</div><div class="chance-row lose">
-<span>3× FARBE</span>
-<strong>15,43%</strong>
-</div><div class="chance-row win">
-<span>4× FARBE</span>
-<strong>0,08%</strong>
-</div><div class="chance-row">
-<span>0× FARBE</span>
-<strong>7,72%</strong>
-</div><div class="total-win">
-TOTAL WIN CHANCE
-<strong>38,66%</strong>
-</div>
+<div class="chances-subtitle">COL DICE PROBABILITY SYSTEM</div>
+<div class="chance-row win"><span>1× FARBE</span><strong>38,58%</strong></div>
+<div class="chance-row recolor"><span>2× FARBE</span><strong>38,58%</strong></div>
+<div class="chance-row lose"><span>3× FARBE</span><strong>15,43%</strong></div>
+<div class="chance-row win"><span>4× FARBE</span><strong>0,08%</strong></div>
+<div class="chance-row"><span>0× FARBE</span><strong>7,72%</strong></div>
+<div class="total-win">TOTAL WIN CHANCE<strong>38,66%</strong></div>
 </div>
 </div><div id="leaderboardScreen">
-<div class="leaderboard-card"><button class="leaderboard-close" onclick="closeLeaderboard()">×</button>
-
+<div class="leaderboard-card">
+<button class="leaderboard-close" onclick="closeLeaderboard()">×</button>
 <div class="leaderboard-title">🏆 RANKING</div>
-<div class="leaderboard-subtitle">TRUSTED STREAMER LEADERBOARD</div><div class="leaderboard-list"><div class="leaderboard-row">
-<div class="leaderboard-rank">1</div><img src="techcozyts.png" class="leaderboard-avatar"><div class="leaderboard-info">
+<div class="leaderboard-subtitle">TRUSTED STREAMER LEADERBOARD</div>
+<div class="leaderboard-list">
+<div class="leaderboard-row">
+<div class="leaderboard-rank">1</div>
+<img src="techcozyts.png" class="leaderboard-avatar">
+<div class="leaderboard-info">
 <div class="leaderboard-name">@techcozyts</div>
 <div class="leaderboard-vouches">+500 VOUCHES</div>
-</div><div class="leaderboard-badge">TRUSTED</div>
-</div><div class="leaderboard-row">
-<div class="leaderboard-rank">2</div><img src="72luca1.png" class="leaderboard-avatar"><div class="leaderboard-info">
+</div>
+<div class="leaderboard-badge">TRUSTED</div>
+</div>
+<div class="leaderboard-row">
+<div class="leaderboard-rank">2</div>
+<img src="72luca1.png" class="leaderboard-avatar">
+<div class="leaderboard-info">
 <div class="leaderboard-name">@72luca1</div>
 <div class="leaderboard-vouches">+50 VOUCHES</div>
-</div><div class="leaderboard-badge">TRUSTED</div>
-</div></div>
+</div>
+<div class="leaderboard-badge">TRUSTED</div>
+</div>
+</div>
 </div>
 </div><div id="diceCounterScreen">
-<div class="dice-counter-card"><button class="dice-counter-close" onclick="closeDiceCounter()">×</button>
+<div class="dice-counter-card" id="diceCounterCard"><button class="dice-counter-close" onclick="closeDiceCounter()">×</button>
 
 <div class="dice-counter-title">🎲 DICE COUNTER</div>
 <div class="dice-counter-subtitle">COL DICE TRACKING SYSTEM</div><div class="dice-counter-list"><div class="dice-counter-row">
-<img src="garama.png" class="dice-counter-image"><div class="dice-counter-info">
-<div class="dice-counter-name">GARAMA</div><div class="dice-counter-number">
+<img src="dragon.png" class="dice-counter-image">
+<div class="dice-counter-info">
+<div class="dice-counter-name">GARAMA</div>
+<div id="garamaCounterNumber" class="dice-counter-number">
 <span id="garamaCounterBig">0</span> DICE
 </div>
-</div><div class="dice-counter-controls">
+</div>
+<div class="dice-counter-controls">
 <button onclick="changeCounter('garama',1)">+1</button>
 <button onclick="changeCounter('garama',-1)">−1</button>
 </div>
 </div><div class="dice-counter-row">
-<img src="dragon.png" class="dice-counter-image"><div class="dice-counter-info">
-<div class="dice-counter-name">DRAGON</div><div class="dice-counter-number">
+<img src="garama.png" class="dice-counter-image">
+<div class="dice-counter-info">
+<div class="dice-counter-name">DRAGON</div>
+<div id="dragonCounterNumber" class="dice-counter-number">
 <span id="dragonCounterBig">0</span> DICE
 </div>
-</div><div class="dice-counter-controls">
+</div>
+<div class="dice-counter-controls">
 <button onclick="changeCounter('dragon',1)">+1</button>
 <button onclick="changeCounter('dragon',-1)">−1</button>
 </div>
 </div></div>
 </div>
 </div><div id="adminScreen">
-<div class="admin-card"><button class="admin-close" onclick="closeAdmin()">×</button>
-
+<div class="admin-card">
+<button class="admin-close" onclick="closeAdmin()">×</button>
 <div class="admin-title">🛡 ADMIN PANEL</div>
-<div class="admin-subtitle">REGISTRIERTE COL DICE ACCOUNTS</div><div id="adminUsersList"></div></div>
-</div><div id="winnerOverlay"><div class="winner-card"><div class="winner-label">★ WINNER ★</div><div class="winner-glitch">WIN</div><img id="winnerBrainrot" class="winner-brainrot"><div id="winnerName" class="winner-name">PLAYER</div><div id="winnerMessage" class="winner-message">
-COLOR MATCH CONFIRMED
-</div><button class="close-winner" onclick="closeWinner()">
-CONTINUE
-</button></div>
-</div><main class="app"><header class="header"><div class="logo">COL DICE</div><div class="subtitle">
-SYSTEM INFECTED // ROLL YOUR LUCK
-</div><div class="live-status">
-● LIVE PREVIEW
-</div></header><div class="top-buttons"><button class="top-button" onclick="openLeaderboard()">🏆</button>
+<div class="admin-subtitle">REGISTRIERTE COL DICE ACCOUNTS</div>
+<div id="adminUsersList"></div>
+</div>
+</div><div id="winnerOverlay">
+<div class="winner-card">
+<div class="winner-label">★ WINNER ★</div>
+<div class="winner-glitch">WIN</div>
+<img id="winnerBrainrot" class="winner-brainrot">
+<div id="winnerName" class="winner-name">PLAYER</div>
+<div id="winnerMessage" class="winner-message">COLOR MATCH CONFIRMED</div>
+<button class="close-winner" onclick="closeWinner()">CONTINUE</button>
+</div>
+</div><main class="app">
+<header class="header">
+<div class="logo">COL DICE</div>
+<div class="subtitle">SYSTEM INFECTED // ROLL YOUR LUCK</div>
+<div class="live-status">● LIVE PREVIEW</div>
+</header><div class="top-buttons">
+<button class="top-button" onclick="openLeaderboard()">🏆</button>
 <button class="top-button" onclick="openChances()">?</button>
 <button class="top-button" onclick="openDiceCounter()">🎲</button>
-
-</div><div class="player-box"><div class="player-label">
-PLAYER USERNAME
-</div><input id="playerName" class="player-input" placeholder="TikTok Username"></div><div class="dice"><div class="die blue" id="die1">?</div>
+</div><div class="player-box">
+<div class="player-label">PLAYER USERNAME</div>
+<input id="playerName" class="player-input" placeholder="TikTok Username">
+</div><div class="dice">
+<div class="die blue" id="die1">?</div>
 <div class="die yellow" id="die2">?</div>
 <div class="die orange" id="die3">?</div>
-<div class="die purple" id="die4">?</div></div><div class="color-panel"><div class="panel-title">
-PLAYER COLOR
-</div><div class="colors"><button class="color-button blue" onclick="selectColor('BLUE',this)">BLUE</button>
+<div class="die purple" id="die4">?</div>
+</div><div class="color-panel">
+<div class="panel-title">PLAYER COLOR</div>
+<div class="colors">
+<button class="color-button blue" onclick="selectColor('BLUE',this)">BLUE</button>
 <button class="color-button yellow" onclick="selectColor('YELLOW',this)">YELLOW</button>
 <button class="color-button orange" onclick="selectColor('ORANGE',this)">ORANGE</button>
 <button class="color-button purple" onclick="selectColor('PURPLE',this)">PURPLE</button>
 <button class="color-button red" onclick="selectColor('RED',this)">RED</button>
 <button class="color-button green" onclick="selectColor('GREEN',this)">GREEN</button>
-
 </div>
-</div><div class="brainrot-title">
-CHOOSE BRAINROT
-</div><div class="brainrot-selection"><button class="brainrot-card"
-data-brainrot="Garama and Madundung"
-data-counter="garama">
-
+</div><div class="brainrot-title">CHOOSE BRAINROT</div><div class="brainrot-selection">
+<button class="brainrot-card" data-brainrot="Garama and Madundung" data-counter="garama">
 <span class="selected-mark">✓</span>
-
-<img src="dragon.png"></button><button class="brainrot-card"
-data-brainrot="Dragon Cannelloni"
-data-counter="dragon">
-
+<img src="dragon.png">
+</button><button class="brainrot-card" data-brainrot="Dragon Cannelloni" data-counter="dragon">
 <span class="selected-mark">✓</span>
+<img src="garama.png">
+</button>
+</div><button class="roll-button" id="rollButton" onclick="rollDice()" disabled>ROLL AGAIN</button>
 
-<img src="garama.png"></button></div><button class="roll-button" id="rollButton" onclick="rollDice()" disabled>
-ROLL AGAIN
-</button><div id="result" class="result">
-SELECT BRAINROT AND COLOR
-</div><section class="verify-window"><div class="verify-title">
-LAST ROLL VERIFY
-</div><div id="lastRollColors" class="last-roll-colors"><div class="last-color blue">?</div>
+<div id="result" class="result">SELECT BRAINROT AND COLOR</div><section class="verify-window">
+<div class="verify-title">LAST ROLL VERIFY</div><div id="lastRollColors" class="last-roll-colors">
+<div class="last-color blue">?</div>
 <div class="last-color yellow">?</div>
 <div class="last-color orange">?</div>
-<div class="last-color purple">?</div></div><div class="verify-info"><div>
-MATCHES: <strong id="verifyMatches">-</strong>
-</div><div>
-RESULT: <strong id="verifyResult">-</strong>
-</div><div class="verify-code">
-CODE: <strong id="verifyCode">-</strong>
-</div></div><button class="copy-button" onclick="copyVerifyCode()">
-COPY CODE
-</button><input id="verifyInput" class="verify-input" placeholder="VERIFY CODE"><button class="check-button" onclick="verifyCode()">
-CHECK CODE
-</button><div id="verifyMessage" class="verify-message"></div></section><div class="vouch-box"><div class="vouch-title">
-VOUCHES
-</div><div id="vouchCount" class="vouch-count">
-0
-</div><div>
-Schreibe „Vouch“ im Chat
-</div><input id="vouchInput" class="vouch-input" placeholder="Vouch eingeben"><button class="vouch-button" onclick="addVouch()">
-VOUCH BESTÄTIGEN
-</button><div id="vouchMessage" class="vouch-message"></div></div><div class="rules"><div class="win">1× FARBE = WIN</div>
+<div class="last-color purple">?</div>
+</div><div class="verify-info">
+<div>MATCHES: <strong id="verifyMatches">-</strong></div>
+<div>RESULT: <strong id="verifyResult">-</strong></div>
+<div class="verify-code">CODE: <strong id="verifyCode">-</strong></div>
+</div><button class="copy-button" onclick="copyVerifyCode()">COPY CODE</button>
+<input id="verifyInput" class="verify-input" placeholder="VERIFY CODE">
+<button class="check-button" onclick="verifyCode()">CHECK CODE</button>
+
+<div id="verifyMessage" class="verify-message"></div>
+</section><div class="vouch-box">
+<div class="vouch-title">VOUCHES</div>
+<div id="vouchCount" class="vouch-count">0</div>
+<div>Schreibe „Vouch“ im Chat</div>
+<input id="vouchInput" class="vouch-input" placeholder="Vouch eingeben">
+<button class="vouch-button" onclick="addVouch()">VOUCH BESTÄTIGEN</button>
+<div id="vouchMessage" class="vouch-message"></div>
+</div><div class="rules">
+<div class="win">1× FARBE = WIN</div>
 <div class="recolor">2× FARBE = RECOLOR</div>
 <div class="lose">3× FARBE = LOSE</div>
-<div class="win">4× FARBE = WIN</div></div></main><button id="adminButton" class="admin-button" onclick="openAdmin()">
-🛡 ADMIN
-</button><button class="logout-button" onclick="logout()">
-LOGOUT
-</button><script>
+<div class="win">4× FARBE = WIN</div>
+</div></main><button id="adminButton" class="admin-button" onclick="openAdmin()">🛡 ADMIN</button>
+<button class="logout-button" onclick="logout()">LOGOUT</button>
 
-const SUPABASE_URL =
-"https://sfliodupxpywpdydrnfu.supabase.co";
-
-const SUPABASE_KEY =
-"sb_publishable_l5b9mWGEuW5XhgC99aZmbA_t0feqTdu";
-
-const ADMIN_USERNAME =
-"Admin Collin";
-
-const ADMIN_PASSWORD =
-"adminCol3101_passwort";
-
-let currentUser=null;
-let selectedColor=null;
-let selectedBrainrot=null;
-let selectedBrainrotImage=null;
-let selectedCounterType=null;
-let lastRoll=null;
-
-let vouchCount =
-Number(localStorage.getItem("colDiceVouches") || 0);
-
-let garamaCounter =
-Number(localStorage.getItem("colDiceGaramaCounter") || 0);
-
-let dragonCounter =
-Number(localStorage.getItem("colDiceDragonCounter") || 0);
-
-/* =========================
-   WINNER MP3
-========================= */
-
-const winnerAudio =
-new Audio("best-to-give-me.mp3");
-
-winnerAudio.preload =
-"auto";
-
-winnerAudio.volume =
-1.0;
-
-function playWinnerSound(){
-
-winnerAudio.pause();
-
-winnerAudio.currentTime =
-0;
-
-winnerAudio.play().catch(error=>{
-
-console.log(
-"Winner-Sound konnte nicht gestartet werden:",
-error
-);
-
-});
-
-}
-
-function stopWinnerSound(){
-
-winnerAudio.pause();
-
-winnerAudio.currentTime =
-0;
-
-}
-
-/* =========================
-   DICE SOUND
-========================= */
-
-let audioContext=null;
-
-function createDiceSound(){
-
-try{
-
-if(!audioContext){
-
-audioContext =
-new(window.AudioContext ||
-window.webkitAudioContext)();
-
-}
-
-if(audioContext.state==="suspended"){
-
-audioContext.resume();
-
-}
-
-const now =
-audioContext.currentTime;
-
-for(let i=0;i<12;i++){
-
-const start =
-now+i*0.075+
-Math.random()*0.025;
-
-const oscillator =
-audioContext.createOscillator();
-
-const gain =
-audioContext.createGain();
-
-oscillator.type="triangle";
-
-oscillator.frequency.setValueAtTime(
-650+Math.random()*900,
-start
-);
-
-oscillator.frequency.exponentialRampToValueAtTime(
-180+Math.random()*220,
-start+0.045
-);
-
-gain.gain.setValueAtTime(
-0.0001,
-start
-);
-
-gain.gain.exponentialRampToValueAtTime(
-0.18,
-start+0.005
-);
-
-gain.gain.exponentialRampToValueAtTime(
-0.0001,
-start+0.055
-);
-
-oscillator.connect(gain);
-gain.connect(audioContext.destination);
-
-oscillator.start(start);
-oscillator.stop(start+0.06);
-
-}
-
-}catch(error){
-
-console.log(error);
-
-}
-
-}
+<script>
+const SUPABASE_URL="https://sfliodupxpywpdydrnfu.supabase.co";
+const SUPABASE_KEY="sb_publishable_l5b9mWGEuW5XhgC99aZmbA_t0feqTdu";
 
 async function supabaseRequest(path,options={}){
-
-const response =
-await fetch(
-SUPABASE_URL+
-"/rest/v1/"+
-path,
+const response=await fetch(
+SUPABASE_URL+"/rest/v1/"+path,
 {
 ...options,
 headers:{
@@ -1146,199 +1027,206 @@ headers:{
 );
 
 if(!response.ok){
-
-throw new Error(
-await response.text()
-);
-
+const errorText=await response.text();
+throw new Error(errorText||"Supabase Fehler");
 }
 
-const text =
-await response.text();
-
-return text?
-JSON.parse(text):
-null;
-
+const text=await response.text();
+return text?JSON.parse(text):null;
 }
+
+const ADMIN_USERNAME="Admin Collin";
+const ADMIN_PASSWORD="adminCol3101_passwort";
+
+let currentUser=null;
+let selectedColor=null;
+let selectedBrainrot=null;
+let selectedBrainrotImage=null;
+let selectedCounterType=null;
+let lastRoll=null;
+let audioContext=null;
+
+let vouchCount=Number(localStorage.getItem("colDiceVouches")||0);
+let garamaCounter=Number(localStorage.getItem("colDiceGaramaCounter")||0);
+let dragonCounter=Number(localStorage.getItem("colDiceDragonCounter")||0);
 
 const colors=[
-
 {name:"BLUE",className:"blue"},
 {name:"YELLOW",className:"yellow"},
 {name:"ORANGE",className:"orange"},
 {name:"PURPLE",className:"purple"},
 {name:"RED",className:"red"},
 {name:"GREEN",className:"green"}
-
 ];
 
+function createDiceSound(){
+try{
+if(!audioContext){
+audioContext=new(window.AudioContext||window.webkitAudioContext)();
+}
+
+if(audioContext.state==="suspended")audioContext.resume();
+
+const now=audioContext.currentTime;
+
+for(let i=0;i<12;i++){
+const start=now+i*.075+Math.random()*.025;
+const oscillator=audioContext.createOscillator();
+const gain=audioContext.createGain();
+const filter=audioContext.createBiquadFilter();
+
+oscillator.type="triangle";
+oscillator.frequency.setValueAtTime(650+Math.random()*900,start);
+oscillator.frequency.exponentialRampToValueAtTime(180+Math.random()*220,start+.045);
+
+filter.type="highpass";
+filter.frequency.value=350;
+
+gain.gain.setValueAtTime(.0001,start);
+gain.gain.exponentialRampToValueAtTime(.18,start+.005);
+gain.gain.exponentialRampToValueAtTime(.0001,start+.055);
+
+oscillator.connect(filter);
+filter.connect(gain);
+gain.connect(audioContext.destination);
+
+oscillator.start(start);
+oscillator.stop(start+.06);
+}
+
+}catch(error){
+console.log("Dice Sound konnte nicht abgespielt werden:",error);
+}
+}
+
+let winnerAudio=null;
+
+function playWinnerSound(){
+try{
+if(winnerAudio){
+winnerAudio.pause();
+winnerAudio.currentTime=0;
+}
+
+winnerAudio=new Audio("best-to-give-me.mp3");
+winnerAudio.volume=1;
+winnerAudio.play();
+
+}catch(error){
+console.log("Winner Sound konnte nicht abgespielt werden:",error);
+}
+}
+
+function stopWinnerSound(){
+if(winnerAudio){
+winnerAudio.pause();
+winnerAudio.currentTime=0;
+winnerAudio=null;
+}
+}
+
 function updateCounters(){
+document.getElementById("vouchCount").textContent=vouchCount;
 
-document.getElementById("vouchCount").textContent =
-vouchCount;
+const garamaElement=document.getElementById("garamaCounterBig");
+const dragonElement=document.getElementById("dragonCounterBig");
 
-document.getElementById("garamaCounterBig").textContent =
-garamaCounter;
+const garamaNumber=document.getElementById("garamaCounterNumber");
+const dragonNumber=document.getElementById("dragonCounterNumber");
 
-document.getElementById("dragonCounterBig").textContent =
-dragonCounter;
+garamaElement.textContent=garamaCounter;
+dragonElement.textContent=dragonCounter;
 
+if(garamaCounter<0)
+garamaNumber.classList.add("negative");
+else
+garamaNumber.classList.remove("negative");
+
+if(dragonCounter<0)
+dragonNumber.classList.add("negative");
+else
+dragonNumber.classList.remove("negative");
 }
 
-function changeCounter(type,amount){
+function changeCounter(counterType,amount){
 
-if(type==="garama"){
-
-garamaCounter=Math.max(
-0,
-garamaCounter+amount
-);
-
-localStorage.setItem(
-"colDiceGaramaCounter",
-garamaCounter
-);
-
+if(counterType==="garama"){
+garamaCounter+=amount;
+localStorage.setItem("colDiceGaramaCounter",garamaCounter);
 }
 
-if(type==="dragon"){
-
-dragonCounter=Math.max(
-0,
-dragonCounter+amount
-);
-
-localStorage.setItem(
-"colDiceDragonCounter",
-dragonCounter
-);
-
+if(counterType==="dragon"){
+dragonCounter+=amount;
+localStorage.setItem("colDiceDragonCounter",dragonCounter);
 }
 
 updateCounters();
-
 }
 
 function addVouch(){
-
-const input =
-document.getElementById("vouchInput");
-
-const message =
-document.getElementById("vouchMessage");
+const input=document.getElementById("vouchInput");
+const message=document.getElementById("vouchMessage");
 
 if(input.value.trim().toLowerCase()!=="vouch"){
-
 message.style.color="#ff1744";
-
-message.textContent=
-'Bitte genau "Vouch" eingeben.';
-
+message.textContent='Bitte genau "Vouch" eingeben.';
 return;
-
 }
 
 vouchCount++;
-
-localStorage.setItem(
-"colDiceVouches",
-vouchCount
-);
-
+localStorage.setItem("colDiceVouches",vouchCount);
 updateCounters();
 
 input.value="";
-
 message.style.color="#00ff9d";
-
 message.textContent="✓ VOUCH GEZÄHLT";
-
 }
 
 async function login(){
 
-const username =
-document.getElementById("loginUsername").value.trim();
-
-const password =
-document.getElementById("loginPassword").value;
-
-const error =
-document.getElementById("loginError");
+const username=document.getElementById("loginUsername").value.trim();
+const password=document.getElementById("loginPassword").value;
+const error=document.getElementById("loginError");
 
 error.textContent="";
 
-if(
-username===ADMIN_USERNAME &&
-password===ADMIN_PASSWORD
-){
-
-currentUser={
-username:ADMIN_USERNAME,
-isAdmin:true
-};
-
-localStorage.setItem(
-"colDiceCurrentUser",
-JSON.stringify(currentUser)
-);
-
+if(username===ADMIN_USERNAME&&password===ADMIN_PASSWORD){
+currentUser={username:ADMIN_USERNAME,isAdmin:true};
+localStorage.setItem("colDiceCurrentUser",JSON.stringify(currentUser));
 enterApp();
-
 return;
-
 }
 
 try{
 
-const accounts =
-await supabaseRequest(
-"konten?select=*&username=ilike."+
-encodeURIComponent(username)
+const accounts=await supabaseRequest(
+"konten?select=*&username=ilike."+encodeURIComponent(username)
 );
 
-if(!accounts.length){
-
-error.textContent=
-"Falscher Benutzername oder falsches Passwort.";
-
+if(!accounts||accounts.length===0){
+error.textContent="Falscher Benutzername oder falsches Passwort.";
 return;
-
 }
 
 const account=accounts[0];
 
 if(account.password!==password){
-
-error.textContent=
-"Falscher Benutzername oder falsches Passwort.";
-
+error.textContent="Falscher Benutzername oder falsches Passwort.";
 return;
-
 }
 
-currentUser={
-username:account.username,
-isAdmin:false
-};
+currentUser={username:account.username,isAdmin:false};
 
-localStorage.setItem(
-"colDiceCurrentUser",
-JSON.stringify(currentUser)
-);
+localStorage.setItem("colDiceCurrentUser",JSON.stringify(currentUser));
 
 enterApp();
 
 }catch(errorObject){
 
 console.error(errorObject);
-
-error.textContent=
-"Verbindung zur Datenbank fehlgeschlagen.";
+error.textContent="Verbindung zur Datenbank fehlgeschlagen.";
 
 }
-
 }
 
 function enterApp(){
@@ -1346,19 +1234,12 @@ function enterApp(){
 document.getElementById("loginScreen").style.display="none";
 document.getElementById("registerScreen").style.display="none";
 
-if(currentUser &&
-currentUser.isAdmin===true){
+const adminButton=document.getElementById("adminButton");
 
-document.getElementById("adminButton")
-.classList.add("active");
-
-}else{
-
-document.getElementById("adminButton")
-.classList.remove("active");
-
-}
-
+if(currentUser&&currentUser.isAdmin===true)
+adminButton.classList.add("active");
+else
+adminButton.classList.remove("active");
 }
 
 function logout(){
@@ -1367,16 +1248,12 @@ stopWinnerSound();
 
 currentUser=null;
 
-localStorage.removeItem(
-"colDiceCurrentUser"
-);
+localStorage.removeItem("colDiceCurrentUser");
 
 document.getElementById("loginScreen").style.display="flex";
-
 document.getElementById("registerScreen").style.display="none";
-
-document.getElementById("adminButton")
-.classList.remove("active");
+document.getElementById("adminButton").classList.remove("active");
+document.getElementById("adminScreen").classList.remove("active");
 
 }
 
@@ -1384,15 +1261,13 @@ function checkLogin(){
 
 updateCounters();
 
-const saved =
-localStorage.getItem("colDiceCurrentUser");
+const saved=localStorage.getItem("colDiceCurrentUser");
 
 if(!saved)return;
 
 try{
 
 currentUser=JSON.parse(saved);
-
 enterApp();
 
 }catch{
@@ -1400,7 +1275,6 @@ enterApp();
 localStorage.removeItem("colDiceCurrentUser");
 
 }
-
 }
 
 function showRegister(){
@@ -1419,178 +1293,134 @@ document.getElementById("loginScreen").style.display="flex";
 
 async function registerAccount(){
 
-const username =
-document.getElementById("registerUsername").value.trim();
-
-const password =
-document.getElementById("registerPassword").value;
-
-const password2 =
-document.getElementById("registerPassword2").value;
-
-const error =
-document.getElementById("registerError");
+const username=document.getElementById("registerUsername").value.trim();
+const password=document.getElementById("registerPassword").value;
+const password2=document.getElementById("registerPassword2").value;
+const error=document.getElementById("registerError");
 
 error.textContent="";
 
 if(username.length<3){
-
-error.textContent=
-"Der Benutzername muss mindestens 3 Zeichen haben.";
-
+error.textContent="Der Benutzername muss mindestens 3 Zeichen haben.";
 return;
-
 }
 
 if(password.length<4){
-
-error.textContent=
-"Das Passwort muss mindestens 4 Zeichen haben.";
-
+error.textContent="Das Passwort muss mindestens 4 Zeichen haben.";
 return;
-
 }
 
 if(password!==password2){
-
-error.textContent=
-"Die Passwörter stimmen nicht überein.";
-
+error.textContent="Die Passwörter stimmen nicht überein.";
 return;
+}
 
+if(username.toLowerCase()===ADMIN_USERNAME.toLowerCase()){
+error.textContent="Dieser Benutzername ist nicht verfügbar.";
+return;
 }
 
 try{
 
-const existing =
-await supabaseRequest(
-"konten?select=id&username=ilike."+
-encodeURIComponent(username)
+const existing=await supabaseRequest(
+"konten?select=id&username=ilike."+encodeURIComponent(username)
 );
 
-if(existing.length){
-
-error.textContent=
-"Dieser Benutzername existiert bereits.";
-
+if(existing&&existing.length>0){
+error.textContent="Dieser Benutzername existiert bereits.";
 return;
-
 }
 
-await supabaseRequest(
-"konten",
-{
+await supabaseRequest("konten",{
 method:"POST",
 body:JSON.stringify({
-username,
-password,
+username:username,
+password:password,
 created_at:new Date().toISOString(),
 is_admin:false
 })
-}
-);
+});
 
 alert("Account erfolgreich erstellt!");
+
+document.getElementById("registerUsername").value="";
+document.getElementById("registerPassword").value="";
+document.getElementById("registerPassword2").value="";
 
 showLogin();
 
 }catch(errorObject){
 
 console.error(errorObject);
-
-error.textContent=
-"Account konnte nicht gespeichert werden.";
+error.textContent="Account konnte nicht gespeichert werden.";
 
 }
-
 }
 
 async function openAdmin(){
 
-if(!currentUser ||
-!currentUser.isAdmin){
-
+if(!currentUser||currentUser.isAdmin!==true){
 alert("Kein Admin-Zugriff.");
+return;
+}
+
+await renderAdminUsers();
+
+document.getElementById("adminScreen").classList.add("active");
+
+}
+
+function closeAdmin(){
+document.getElementById("adminScreen").classList.remove("active");
+}
+
+async function renderAdminUsers(){
+
+const container=document.getElementById("adminUsersList");
+
+container.innerHTML="<div class='admin-empty'>Accounts werden geladen...</div>";
+
+try{
+
+const accounts=await supabaseRequest("konten?select=*&order=id.asc");
+
+container.innerHTML="";
+
+const adminDiv=document.createElement("div");
+
+adminDiv.className="admin-user";
+
+adminDiv.innerHTML=`
+<div class="admin-user-name">🛡 ${ADMIN_USERNAME}</div>
+<div class="admin-user-date">Hauptadministrator</div>
+<div class="admin-user-admin">ADMINISTRATOR</div>
+`;
+
+container.appendChild(adminDiv);
+
+if(!accounts||accounts.length===0){
+
+const empty=document.createElement("div");
+
+empty.className="admin-empty";
+empty.textContent="Noch keine weiteren Accounts registriert.";
+
+container.appendChild(empty);
 
 return;
 
 }
 
-await renderAdminUsers();
-
-document.getElementById("adminScreen")
-.classList.add("active");
-
-}
-
-function closeAdmin(){
-
-document.getElementById("adminScreen")
-.classList.remove("active");
-
-}
-
-async function renderAdminUsers(){
-
-const container =
-document.getElementById("adminUsersList");
-
-container.innerHTML=
-"<div class='admin-empty'>Accounts werden geladen...</div>";
-
-try{
-
-const accounts =
-await supabaseRequest(
-"konten?select=*&order=id.asc"
-);
-
-container.innerHTML="";
-
-const adminDiv =
-document.createElement("div");
-
-adminDiv.className="admin-user";
-
-adminDiv.innerHTML=`
-
-<div class="admin-user-name">
-🛡 ${ADMIN_USERNAME}
-</div>
-
-<div class="admin-user-date">
-Hauptadministrator
-</div>
-
-<div class="admin-user-admin">
-ADMINISTRATOR
-</div>
-
-`;
-
-container.appendChild(adminDiv);
-
 accounts.forEach((account,index)=>{
 
-const user =
-document.createElement("div");
+const user=document.createElement("div");
 
 user.className="admin-user";
 
 user.innerHTML=`
-
-<div class="admin-user-name">
-👤 ${escapeHTML(account.username)}
-</div>
-
-<div class="admin-user-date">
-Registriert: ${escapeHTML(account.created_at||"Unbekannt")}
-</div>
-
-<div class="admin-user-admin">
-USER ACCOUNT #${index+1}
-</div>
-
+<div class="admin-user-name">👤 ${escapeHTML(account.username)}</div>
+<div class="admin-user-date">Registriert: ${escapeHTML(account.created_at||"Unbekannt")}</div>
+<div class="admin-user-admin">USER ACCOUNT #${index+1}</div>
 `;
 
 container.appendChild(user);
@@ -1601,11 +1431,9 @@ container.appendChild(user);
 
 console.error(errorObject);
 
-container.innerHTML=
-"<div class='admin-empty'>Accounts konnten nicht geladen werden.</div>";
+container.innerHTML="<div class='admin-empty'>Accounts konnten nicht geladen werden.</div>";
 
 }
-
 }
 
 function escapeHTML(text){
@@ -1619,26 +1447,19 @@ return String(text)
 
 }
 
-document.querySelectorAll(".brainrot-card")
-.forEach(card=>{
+document.querySelectorAll(".brainrot-card").forEach(card=>{
 
 card.addEventListener("click",()=>{
 
-document.querySelectorAll(".brainrot-card")
-.forEach(other=>{
+document.querySelectorAll(".brainrot-card").forEach(other=>{
 other.classList.remove("active");
 });
 
 card.classList.add("active");
 
-selectedBrainrot =
-card.dataset.brainrot;
-
-selectedCounterType =
-card.dataset.counter;
-
-selectedBrainrotImage =
-card.querySelector("img").src;
+selectedBrainrot=card.dataset.brainrot;
+selectedCounterType=card.dataset.counter;
+selectedBrainrotImage=card.querySelector("img").src;
 
 updateReadyStatus();
 
@@ -1648,39 +1469,26 @@ updateReadyStatus();
 
 function updateReadyStatus(){
 
-const result =
-document.getElementById("result");
+const result=document.getElementById("result");
 
-if(selectedBrainrot &&
-selectedColor){
-
-result.textContent=
-selectedBrainrot+
-" LOCKED // READY TO ROLL";
-
-}else if(selectedBrainrot){
-
-result.textContent=
-selectedBrainrot+
-" SELECTED // CHOOSE COLOR";
+if(selectedBrainrot&&selectedColor)
+result.textContent=selectedBrainrot+" LOCKED // READY TO ROLL";
+else if(selectedBrainrot)
+result.textContent=selectedBrainrot+" SELECTED // CHOOSE COLOR";
 
 }
 
-}
+function selectColor(colorName,button){
 
-function selectColor(color,button){
+selectedColor=colorName;
 
-selectedColor=color;
-
-document.querySelectorAll(".color-button")
-.forEach(btn=>{
+document.querySelectorAll(".color-button").forEach(btn=>{
 btn.classList.remove("active");
 });
 
 button.classList.add("active");
 
-document.getElementById("rollButton")
-.disabled=!selectedBrainrot;
+document.getElementById("rollButton").disabled=!selectedBrainrot;
 
 updateReadyStatus();
 
@@ -1688,17 +1496,12 @@ updateReadyStatus();
 
 function generateCode(){
 
-const chars=
-"ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
 let code="";
 
 for(let i=0;i<8;i++){
-
-code+=chars[
-Math.floor(Math.random()*chars.length)
-];
-
+code+=chars[Math.floor(Math.random()*chars.length)];
 }
 
 return code.slice(0,4)+"-"+code.slice(4);
@@ -1707,22 +1510,15 @@ return code.slice(0,4)+"-"+code.slice(4);
 
 function rollDice(){
 
-if(!selectedColor ||
-!selectedBrainrot)return;
+if(!selectedColor||!selectedBrainrot)return;
 
-const button =
-document.getElementById("rollButton");
-
-const result =
-document.getElementById("result");
-
-const dice =
-document.querySelectorAll(".die");
+const button=document.getElementById("rollButton");
+const result=document.getElementById("result");
+const dice=document.querySelectorAll(".die");
 
 button.disabled=true;
 
-result.textContent=
-"SYSTEM ROLLING...";
+result.textContent="SYSTEM ROLLING...";
 
 createDiceSound();
 
@@ -1732,21 +1528,13 @@ die.classList.add("rolling");
 
 let animationTime=0;
 
-const animation =
-setInterval(()=>{
+const animation=setInterval(()=>{
 
 dice.forEach(die=>{
 
-const random =
-colors[
-Math.floor(Math.random()*colors.length)
-];
+const random=colors[Math.floor(Math.random()*colors.length)];
 
-die.className=
-"die "+
-random.className+
-" rolling";
-
+die.className="die "+random.className+" rolling";
 die.textContent="◆";
 
 });
@@ -1770,93 +1558,44 @@ finishRoll();
 function finishRoll(){
 
 const rollResults=[];
-
 let matches=0;
 
 dice.forEach(die=>{
 
-const random=
-colors[
-Math.floor(Math.random()*colors.length)
-];
+const random=colors[Math.floor(Math.random()*colors.length)];
 
 rollResults.push(random.name);
 
-die.className=
-"die "+
-random.className;
-
+die.className="die "+random.className;
 die.textContent="◆";
 
-if(random.name===selectedColor){
-
+if(random.name===selectedColor)
 matches++;
-
-}
 
 });
 
-if(selectedCounterType==="garama"){
-
-garamaCounter++;
-
-localStorage.setItem(
-"colDiceGaramaCounter",
-garamaCounter
-);
-
-}
-
-if(selectedCounterType==="dragon"){
-
-dragonCounter++;
-
-localStorage.setItem(
-"colDiceDragonCounter",
-dragonCounter
-);
-
-}
-
-updateCounters();
+/* COUNTER WIRD HIER NICHT MEHR AUTOMATISCH ERHÖHT */
 
 let outcome;
 
-if(matches===1 || matches===4){
-
+if(matches===1||matches===4)
 outcome="WIN";
-
-}else if(matches===2){
-
+else if(matches===2)
 outcome="RECOLOR";
-
-}else if(matches===3){
-
+else if(matches===3)
 outcome="LOSE";
-
-}else{
-
+else
 outcome="NO MATCH";
-
-}
 
 lastRoll={
 
 code:generateCode(),
-
-player:
-document.getElementById("playerName").value.trim()||
-"UNKNOWN",
-
+player:document.getElementById("playerName").value.trim()||"UNKNOWN",
 brainrot:selectedBrainrot,
-
 playerColor:selectedColor,
-
 dice:rollResults,
-
-matches,
-
-outcome
+matches:matches,
+outcome:outcome
 
 };
 
@@ -1864,41 +1603,28 @@ updateVerifyWindow();
 
 if(outcome==="WIN"){
 
-result.textContent=
-matches+
-"× COLOR — WIN";
-
+result.textContent=matches+"× COLOR — WIN";
 result.style.color="#00ff9d";
 
 playWinnerSound();
-
 showWinner();
 
 }else if(outcome==="RECOLOR"){
 
-result.textContent=
-"2× COLOR — RECOLOR";
-
+result.textContent="2× COLOR — RECOLOR";
 result.style.color="#fff000";
-
 button.disabled=false;
 
 }else if(outcome==="LOSE"){
 
-result.textContent=
-"3× COLOR — LOSE";
-
+result.textContent="3× COLOR — LOSE";
 result.style.color="#ff1744";
-
 button.disabled=false;
 
 }else{
 
-result.textContent=
-"NO MATCH — TRY AGAIN";
-
+result.textContent="NO MATCH — TRY AGAIN";
 result.style.color="white";
-
 button.disabled=false;
 
 }
@@ -1909,37 +1635,26 @@ button.disabled=false;
 
 function updateVerifyWindow(){
 
-const container =
-document.getElementById("lastRollColors");
+const container=document.getElementById("lastRollColors");
 
 container.innerHTML="";
 
 lastRoll.dice.forEach(colorName=>{
 
-const color =
-colors.find(c=>c.name===colorName);
+const color=colors.find(c=>c.name===colorName);
 
-const div =
-document.createElement("div");
+const div=document.createElement("div");
 
-div.className=
-"last-color "+
-color.className;
-
+div.className="last-color "+color.className;
 div.textContent=color.name;
 
 container.appendChild(div);
 
 });
 
-document.getElementById("verifyMatches")
-.textContent=lastRoll.matches;
-
-document.getElementById("verifyResult")
-.textContent=lastRoll.outcome;
-
-document.getElementById("verifyCode")
-.textContent=lastRoll.code;
+document.getElementById("verifyMatches").textContent=lastRoll.matches;
+document.getElementById("verifyResult").textContent=lastRoll.outcome;
+document.getElementById("verifyCode").textContent=lastRoll.code;
 
 }
 
@@ -1949,25 +1664,18 @@ if(!lastRoll)return;
 
 navigator.clipboard.writeText(lastRoll.code);
 
-document.getElementById("verifyMessage")
-.textContent="CODE COPIED";
+document.getElementById("verifyMessage").textContent="CODE COPIED";
 
 }
 
 function verifyCode(){
 
-const input =
-document.getElementById("verifyInput")
-.value.trim()
-.toUpperCase();
-
-const message =
-document.getElementById("verifyMessage");
+const input=document.getElementById("verifyInput").value.trim().toUpperCase();
+const message=document.getElementById("verifyMessage");
 
 if(!lastRoll){
 
-message.textContent=
-"Noch kein Roll vorhanden.";
+message.textContent="Noch kein Roll vorhanden.";
 
 return;
 
@@ -1976,16 +1684,12 @@ return;
 if(input===lastRoll.code){
 
 message.style.color="#00ff9d";
-
-message.textContent=
-"✓ VERIFIED — ROLL STIMMT ÜBEREIN";
+message.textContent="✓ VERIFIED — ROLL STIMMT ÜBEREIN";
 
 }else{
 
 message.style.color="#ff1744";
-
-message.textContent=
-"✕ CODE NICHT GEFUNDEN";
+message.textContent="✕ CODE NICHT GEFUNDEN";
 
 }
 
@@ -1993,23 +1697,15 @@ message.textContent=
 
 function showWinner(){
 
-document.getElementById("winnerName")
-.textContent=
-document.getElementById("playerName")
-.value.trim()||
-"PLAYER";
+document.getElementById("winnerName").textContent=
+document.getElementById("playerName").value.trim()||"PLAYER";
 
-document.getElementById("winnerBrainrot")
-.src=
-selectedBrainrotImage;
+document.getElementById("winnerBrainrot").src=selectedBrainrotImage;
 
-document.getElementById("winnerMessage")
-.textContent=
-selectedBrainrot+
-" // COLOR MATCH CONFIRMED";
+document.getElementById("winnerMessage").textContent=
+selectedBrainrot+" // COLOR MATCH CONFIRMED";
 
-document.getElementById("winnerOverlay")
-.classList.add("active");
+document.getElementById("winnerOverlay").classList.add("active");
 
 }
 
@@ -2017,57 +1713,132 @@ function closeWinner(){
 
 stopWinnerSound();
 
-document.getElementById("winnerOverlay")
-.classList.remove("active");
+document.getElementById("winnerOverlay").classList.remove("active");
 
-document.getElementById("rollButton")
-.disabled=false;
+document.getElementById("rollButton").disabled=false;
 
 }
 
 function openChances(){
 
-document.getElementById("chancesScreen")
-.classList.add("active");
+document.getElementById("chancesScreen").classList.add("active");
 
 }
 
 function closeChances(){
 
-document.getElementById("chancesScreen")
-.classList.remove("active");
+document.getElementById("chancesScreen").classList.remove("active");
 
 }
 
 function openLeaderboard(){
 
-document.getElementById("leaderboardScreen")
-.classList.add("active");
+document.getElementById("leaderboardScreen").classList.add("active");
 
 }
 
 function closeLeaderboard(){
 
-document.getElementById("leaderboardScreen")
-.classList.remove("active");
+document.getElementById("leaderboardScreen").classList.remove("active");
 
 }
 
 function openDiceCounter(){
 
-document.getElementById("diceCounterScreen")
-.classList.add("active");
+const screen=document.getElementById("diceCounterScreen");
+const card=document.getElementById("diceCounterCard");
+
+screen.classList.add("active");
+
+if(!card.dataset.positioned){
+
+card.style.left="50%";
+card.style.top="50%";
+card.style.transform="translate(-50%,-50%)";
+
+card.dataset.positioned="true";
+
+}
 
 }
 
 function closeDiceCounter(){
 
-document.getElementById("diceCounterScreen")
-.classList.remove("active");
+document.getElementById("diceCounterScreen").classList.remove("active");
 
 }
 
-checkLogin();
+/* DICE COUNTER VERSCHIEBBAR */
+(function(){
 
-</script></body>
-</html>
+const card=document.getElementById("diceCounterCard");
+
+let isDragging=false;
+let startX=0;
+let startY=0;
+let startLeft=0;
+let startTop=0;
+
+function startDrag(event){
+
+if(event.target.closest("button"))return;
+
+isDragging=true;
+
+card.classList.add("dragging");
+
+const point=event.touches?event.touches[0]:event;
+
+const rect=card.getBoundingClientRect();
+
+startX=point.clientX;
+startY=point.clientY;
+startLeft=rect.left;
+startTop=rect.top;
+
+card.style.transform="none";
+
+event.preventDefault();
+
+}
+
+function drag(event){
+
+if(!isDragging)return;
+
+const point=event.touches?event.touches[0]:event;
+
+let newLeft=startLeft+(point.clientX-startX);
+let newTop=startTop+(point.clientY-startY);
+
+const maxLeft=window.innerWidth-card.offsetWidth;
+const maxTop=window.innerHeight-card.offsetHeight;
+
+newLeft=Math.max(0,Math.min(newLeft,maxLeft));
+newTop=Math.max(0,Math.min(newTop,maxTop));
+
+card.style.left=newLeft+"px";
+card.style.top=newTop+"px";
+
+}
+
+function stopDrag(){
+
+isDragging=false;
+
+card.classList.remove("dragging");
+
+}
+
+card.addEventListener("mousedown",startDrag);
+document.addEventListener("mousemove",drag);
+document.addEventListener("mouseup",stopDrag);
+
+card.addEventListener("touchstart",startDrag,{passive:false});
+document.addEventListener("touchmove",drag,{passive:false});
+document.addEventListener("touchend",stopDrag);
+
+})();
+
+checkLogin();
+</script></body></html>
