@@ -1,0 +1,2060 @@
+<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COL DICE</title><style>
+*{box-sizing:border-box}html,body{
+margin:0;
+min-height:100%;
+font-family:Arial,Helvetica,sans-serif;
+color:white;
+background:radial-gradient(circle at top,#075d9c 0%,#031b32 35%,#010811 75%,#000308 100%);
+}body{padding:10px;overflow-x:hidden}
+button,input,select{font:inherit}
+button{cursor:pointer}.app{
+position:relative;
+width:100%;
+max-width:900px;
+min-height:calc(100vh - 20px);
+margin:auto;
+padding:18px 14px 25px;
+border:1px solid #00aaff;
+border-radius:25px;
+background:linear-gradient(145deg,rgba(0,35,70,.92),rgba(0,5,15,.98));
+box-shadow:0 0 18px #008cff,0 0 55px rgba(0,130,255,.35),inset 0 0 35px rgba(0,170,255,.1);
+}
+
+.header{text-align:center}
+
+.logo{
+display:inline-block;
+font-size:clamp(2.3rem,10vw,4rem);
+font-weight:900;
+letter-spacing:7px;
+text-shadow:0 0 5px white,0 0 15px #00aaff,0 0 35px #0077ff,0 0 60px #0077ff;
+}
+
+.subtitle{
+margin-top:4px;
+color:#8edcff;
+font-size:.65rem;
+letter-spacing:3px;
+}
+
+.live-status{
+display:inline-block;
+margin-top:15px;
+padding:8px 14px;
+border:1px solid #00ff9d;
+border-radius:30px;
+color:#00ff9d;
+font-size:.72rem;
+box-shadow:0 0 15px rgba(0,255,157,.3);
+}
+
+.top-buttons{
+display:flex;
+justify-content:center;
+gap:10px;
+margin-top:18px;
+}
+
+.top-button{
+width:42px;
+height:42px;
+border:1px solid #00aaff;
+border-radius:50%;
+color:white;
+background:rgba(0,100,200,.3);
+font-size:19px;
+font-weight:bold;
+box-shadow:0 0 10px #00aaff;
+}
+
+.top-button:hover{
+background:#008cff;
+box-shadow:0 0 20px #00ffff;
+}
+
+.player-box{
+margin-top:18px;
+padding:12px;
+border:1px solid rgba(0,170,255,.5);
+border-radius:16px;
+background:rgba(0,80,140,.16);
+text-align:center;
+}
+
+.player-label{
+color:#8edcff;
+font-size:.7rem;
+letter-spacing:2px;
+}
+
+.player-input{
+width:100%;
+max-width:320px;
+margin-top:8px;
+padding:11px;
+border:1px solid #008cff;
+border-radius:9px;
+outline:none;
+color:white;
+background:rgba(0,10,25,.9);
+text-align:center;
+}
+
+.dice{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:13px;
+max-width:700px;
+margin:25px auto;
+}
+
+.die{
+width:100%;
+aspect-ratio:1/1;
+display:flex;
+justify-content:center;
+align-items:center;
+border:3px solid white;
+border-radius:23px;
+color:white;
+font-size:clamp(2.5rem,10vw,5rem);
+box-shadow:0 0 12px currentColor,0 0 30px currentColor,inset 0 0 25px rgba(255,255,255,.25);
+transition:.15s;
+}
+
+.die.rolling{animation:diceShake .12s infinite}
+
+@keyframes diceShake{
+0%{transform:rotate(0deg) scale(1)}
+25%{transform:rotate(5deg) scale(1.05)}
+50%{transform:rotate(-5deg) scale(.96)}
+75%{transform:rotate(4deg) scale(1.04)}
+100%{transform:rotate(0deg) scale(1)}
+}
+
+.blue{background:#006eff;color:#00aaff}
+.yellow{background:#d8b400;color:#fff000}
+.orange{background:#ff6500;color:#ff8c00}
+.purple{background:#822cff;color:#bd7aff}
+.red{background:#d80027;color:#ff1744}
+.green{background:#009c63;color:#00ff9d}
+
+.color-panel{
+padding:13px;
+border:1px solid rgba(0,170,255,.5);
+border-radius:16px;
+background:rgba(0,80,140,.15);
+}
+
+.panel-title{
+margin-bottom:10px;
+text-align:center;
+color:#a9e5ff;
+font-size:.7rem;
+letter-spacing:2px;
+}
+
+.colors{
+display:grid;
+grid-template-columns:repeat(6,1fr);
+gap:7px;
+}
+
+.color-button{
+min-height:42px;
+border:1px solid white;
+border-radius:10px;
+color:white;
+font-size:.7rem;
+font-weight:bold;
+}
+
+.color-button.active{
+outline:3px solid white;
+box-shadow:0 0 20px currentColor;
+}
+
+.brainrot-title{
+margin-top:22px;
+margin-bottom:8px;
+text-align:center;
+color:#9fe7ff;
+font-size:.65rem;
+font-weight:bold;
+letter-spacing:2px;
+}
+
+.brainrot-selection{
+display:flex;
+justify-content:center;
+gap:10px;
+margin:0 auto;
+}
+
+.brainrot-card{
+position:relative;
+width:145px;
+height:170px;
+padding:5px;
+overflow:hidden;
+border:1px solid rgba(0,170,255,.7);
+border-radius:12px;
+background:linear-gradient(145deg,rgba(0,70,130,.7),rgba(0,5,20,.95));
+transition:.2s ease;
+box-shadow:0 0 8px rgba(0,130,255,.5);
+}
+
+.brainrot-card.active{
+transform:scale(1.08);
+border-color:#00ff9d;
+box-shadow:0 0 15px #00ff9d,0 0 35px rgba(0,255,157,.5);
+}
+
+.brainrot-card img{
+width:100%;
+height:145px;
+object-fit:contain;
+filter:drop-shadow(0 0 5px rgba(0,180,255,.8));
+}
+
+.selected-mark{
+position:absolute;
+top:4px;
+right:4px;
+display:none;
+width:16px;
+height:16px;
+border-radius:50%;
+background:#00ff9d;
+color:#00140d;
+font-size:11px;
+font-weight:bold;
+line-height:16px;
+}
+
+.brainrot-card.active .selected-mark{display:block}
+
+.roll-button{
+width:100%;
+margin-top:20px;
+padding:18px;
+border:none;
+border-radius:50px;
+background:white;
+color:#02101c;
+font-size:1.1rem;
+font-weight:bold;
+letter-spacing:3px;
+box-shadow:0 0 12px white,0 0 35px white,0 0 65px #00aaff;
+}
+
+.roll-button:disabled{opacity:.5}
+
+.result{
+min-height:45px;
+margin-top:20px;
+text-align:center;
+font-size:1.15rem;
+font-weight:bold;
+}
+
+.verify-window,
+.vouch-box,
+.rules{
+margin-top:18px;
+padding:13px;
+border:1px solid rgba(0,170,255,.45);
+border-radius:16px;
+}
+
+.verify-window{
+max-width:600px;
+margin-left:auto;
+margin-right:auto;
+background:linear-gradient(145deg,rgba(0,100,180,.28),rgba(0,5,20,.8));
+}
+
+.verify-title{
+text-align:center;
+color:#00d9ff;
+font-size:.75rem;
+font-weight:bold;
+letter-spacing:3px;
+}
+
+.last-roll-colors{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:6px;
+margin-top:12px;
+}
+
+.last-color{
+padding:10px 4px;
+border-radius:9px;
+color:white;
+text-align:center;
+font-size:.62rem;
+font-weight:bold;
+box-shadow:0 0 12px currentColor;
+}
+
+.verify-info{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:7px;
+margin-top:12px;
+font-size:.68rem;
+}
+
+.verify-info div{
+padding:8px;
+border-radius:8px;
+background:rgba(0,0,0,.35);
+color:#bdeeff;
+}
+
+.verify-code{
+grid-column:span 2;
+text-align:center;
+}
+
+.copy-button,
+.check-button{
+width:100%;
+margin-top:10px;
+padding:10px;
+border-radius:9px;
+color:white;
+background:rgba(0,130,220,.3);
+border:1px solid #00aaff;
+font-size:.7rem;
+}
+
+.check-button{
+border-color:#00ff9d;
+background:rgba(0,180,120,.25);
+}
+
+.verify-input{
+width:100%;
+margin-top:9px;
+padding:12px;
+border:1px solid #008cff;
+border-radius:9px;
+outline:none;
+color:white;
+background:rgba(0,10,25,.9);
+text-align:center;
+}
+
+.verify-message{
+min-height:18px;
+margin-top:8px;
+color:#8edcff;
+text-align:center;
+font-size:.68rem;
+}
+
+.vouch-box{
+text-align:center;
+background:rgba(0,80,160,.2);
+}
+
+.vouch-title{
+color:#8edcff;
+font-size:.75rem;
+letter-spacing:4px;
+}
+
+.vouch-count{
+margin-top:5px;
+font-size:3rem;
+font-weight:900;
+text-shadow:0 0 10px white,0 0 25px #00aaff,0 0 50px #0077ff;
+}
+
+.vouch-input{
+width:100%;
+margin-top:12px;
+padding:10px;
+border:1px solid #008cff;
+border-radius:9px;
+color:white;
+background:rgba(0,10,25,.9);
+text-align:center;
+}
+
+.vouch-button{
+width:100%;
+margin-top:8px;
+padding:10px;
+border:1px solid #00ff9d;
+border-radius:9px;
+color:white;
+background:rgba(0,180,120,.25);
+font-weight:bold;
+}
+
+.vouch-message{
+min-height:18px;
+margin-top:8px;
+font-size:.7rem;
+color:#00ff9d;
+}
+
+.rules{
+text-align:center;
+font-size:.75rem;
+line-height:1.7;
+background:rgba(0,100,180,.12);
+}
+
+.win{color:#00ff9d}
+.recolor{color:#fff000}
+.lose{color:#ff1744}
+
+#loginScreen,
+#registerScreen,
+#chancesScreen,
+#leaderboardScreen,
+#diceCounterScreen,
+#diceHistoryScreen,
+#adminScreen,
+#winnerOverlay{
+position:fixed;
+inset:0;
+z-index:1000;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:20px;
+background:radial-gradient(circle,rgba(0,120,255,.35),rgba(0,0,10,.97));
+backdrop-filter:blur(15px);
+}
+
+#diceCounterScreen{
+pointer-events:none;
+background:transparent;
+backdrop-filter:none;
+}
+
+#diceCounterScreen .dice-counter-card{
+pointer-events:auto;
+}
+
+#registerScreen,
+#chancesScreen,
+#leaderboardScreen,
+#diceCounterScreen,
+#diceHistoryScreen,
+#adminScreen,
+#winnerOverlay{
+display:none;
+}
+
+#chancesScreen.active,
+#leaderboardScreen.active,
+#diceCounterScreen.active,
+#diceHistoryScreen.active,
+#adminScreen.active,
+#winnerOverlay.active{
+display:flex;
+}
+
+.login-card,
+.chances-card,
+.leaderboard-card,
+.dice-counter-card,
+.dice-history-card,
+.admin-card,
+.winner-card{
+width:100%;
+max-width:550px;
+padding:25px 18px;
+border:1px solid #00aaff;
+border-radius:24px;
+background:linear-gradient(145deg,rgba(0,55,110,.96),rgba(0,3,15,.99));
+box-shadow:0 0 20px #00aaff,0 0 70px rgba(0,100,255,.55);
+}
+
+.login-title,
+.chances-title,
+.leaderboard-title,
+.dice-counter-title,
+.dice-history-title,
+.admin-title{
+text-align:center;
+font-size:2rem;
+font-weight:900;
+letter-spacing:3px;
+}
+
+.login-subtitle,
+.chances-subtitle,
+.leaderboard-subtitle,
+.dice-counter-subtitle,
+.dice-history-subtitle,
+.admin-subtitle{
+margin:8px 0 20px;
+color:#8edcff;
+text-align:center;
+font-size:.7rem;
+letter-spacing:2px;
+}
+
+.login-input{
+width:100%;
+margin-top:9px;
+padding:12px;
+border:1px solid #008cff;
+border-radius:9px;
+outline:none;
+color:white;
+background:rgba(0,10,25,.9);
+text-align:center;
+}
+
+.login-button,
+.register-button{
+width:100%;
+margin-top:15px;
+padding:13px;
+border-radius:10px;
+color:white;
+font-weight:bold;
+}
+
+.login-button{
+border:1px solid #00ff9d;
+background:rgba(0,180,120,.25);
+}
+
+.register-button{
+border:1px solid #00aaff;
+background:rgba(0,100,200,.3);
+}
+
+.login-error{
+min-height:20px;
+margin-top:12px;
+color:#ff1744;
+text-align:center;
+font-size:.75rem;
+}
+
+.chance-row{
+display:flex;
+justify-content:space-between;
+margin:8px 0;
+padding:13px;
+border-radius:10px;
+background:rgba(0,0,0,.3);
+}
+
+.total-win{
+margin-top:20px;
+padding:18px;
+border:1px solid #00ff9d;
+border-radius:13px;
+text-align:center;
+color:#baffdf;
+}
+
+.total-win strong{
+display:block;
+margin-top:7px;
+font-size:2rem;
+color:#00ff9d;
+}
+
+.back-button,
+.leaderboard-close,
+.dice-counter-close,
+.dice-history-close,
+.admin-close{
+position:absolute;
+width:42px;
+height:42px;
+border:1px solid #00aaff;
+border-radius:50%;
+color:white;
+background:rgba(0,100,200,.3);
+font-size:22px;
+}
+
+.back-button{top:20px;left:20px}
+
+.leaderboard-close,
+.dice-counter-close,
+.dice-history-close,
+.admin-close{
+top:12px;
+right:12px;
+border-color:#ff1744;
+}
+
+.leaderboard-card,
+.dice-counter-card,
+.dice-history-card,
+.admin-card{
+position:relative;
+}
+
+.leaderboard-list{
+display:flex;
+flex-direction:column;
+gap:12px;
+}
+
+.leaderboard-row{
+display:flex;
+align-items:center;
+gap:12px;
+padding:12px;
+border:1px solid rgba(0,170,255,.5);
+border-radius:14px;
+background:linear-gradient(90deg,rgba(0,100,180,.35),rgba(0,0,0,.4));
+}
+
+.leaderboard-rank{
+width:32px;
+font-size:1.3rem;
+font-weight:900;
+text-align:center;
+color:#fff000;
+}
+
+.leaderboard-avatar{
+width:58px;
+height:58px;
+border:2px solid #00aaff;
+border-radius:50%;
+object-fit:cover;
+background:#00152a;
+}
+
+.leaderboard-info{flex:1}
+
+.leaderboard-name{
+font-size:1rem;
+font-weight:900;
+}
+
+.leaderboard-vouches{
+margin-top:4px;
+color:#00ff9d;
+font-size:.7rem;
+font-weight:bold;
+}
+
+.leaderboard-badge{
+padding:5px 8px;
+border:1px solid #00ff9d;
+border-radius:8px;
+color:#00ff9d;
+font-size:.55rem;
+font-weight:bold;
+}
+
+.dice-counter-screen{
+touch-action:none;
+}
+
+.dice-counter-card{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+cursor:grab;
+touch-action:none;
+}
+
+.dice-counter-card.dragging{
+cursor:grabbing;
+}
+
+.dice-counter-list{
+display:flex;
+flex-direction:column;
+gap:14px;
+}
+
+.dice-counter-row{
+display:flex;
+align-items:center;
+gap:12px;
+padding:12px;
+border:1px solid rgba(0,170,255,.5);
+border-radius:14px;
+background:rgba(0,0,0,.35);
+}
+
+.dice-counter-image{
+width:70px;
+height:70px;
+object-fit:contain;
+}
+
+.dice-counter-info{
+flex:1;
+}
+
+.dice-counter-name{
+font-weight:900;
+}
+
+.dice-counter-number{
+margin-top:5px;
+color:#00ff9d;
+font-size:1.5rem;
+font-weight:bold;
+}
+
+.dice-counter-number.negative,
+.dice-counter-number.negative span{
+color:#ff1744 !important;
+text-shadow:0 0 10px #ff1744,0 0 20px #ff1744 !important;
+}
+
+.dice-counter-controls{
+display:flex;
+gap:6px;
+}
+
+.dice-counter-controls button{
+width:34px;
+height:32px;
+border:1px solid #00aaff;
+border-radius:7px;
+color:white;
+background:rgba(0,100,200,.35);
+font-weight:bold;
+}
+
+.dice-counter-controls button:hover{
+background:#008cff;
+box-shadow:0 0 10px #00aaff;
+}
+
+.dice-history-card{
+max-height:90vh;
+overflow:auto;
+}
+
+.dice-history-form{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
+
+.dice-history-input{
+width:100%;
+padding:12px;
+border:1px solid #008cff;
+border-radius:9px;
+outline:none;
+color:white;
+background:rgba(0,10,25,.9);
+text-align:center;
+}
+
+.dice-history-save{
+grid-column:span 2;
+width:100%;
+padding:13px;
+border:1px solid #00ff9d;
+border-radius:10px;
+color:white;
+background:rgba(0,180,120,.25);
+font-weight:bold;
+}
+
+.dice-history-list{
+display:flex;
+flex-direction:column;
+gap:10px;
+margin-top:18px;
+}
+
+.dice-history-entry{
+padding:12px;
+border:1px solid rgba(0,170,255,.5);
+border-radius:12px;
+background:rgba(0,0,0,.35);
+}
+
+.dice-history-date{
+color:#8edcff;
+font-size:.65rem;
+}
+
+.dice-history-values{
+display:flex;
+justify-content:space-around;
+margin-top:8px;
+font-weight:bold;
+}
+
+.dice-history-garama{
+color:#00ff9d;
+}
+
+.dice-history-dragon{
+color:#00aaff;
+}
+
+.dice-history-delete{
+width:100%;
+margin-top:9px;
+padding:8px;
+border:1px solid #ff1744;
+border-radius:8px;
+color:white;
+background:rgba(180,0,40,.25);
+font-size:.7rem;
+}
+
+.dice-history-empty{
+padding:20px;
+text-align:center;
+color:#8edcff;
+}
+
+.admin-card{
+border-color:#00ff9d;
+box-shadow:0 0 20px #00ff9d,0 0 70px rgba(0,100,255,.55);
+max-height:90vh;
+overflow:auto;
+}
+
+.admin-title{color:#00ff9d}
+
+.admin-user{
+margin-top:10px;
+padding:13px;
+border:1px solid rgba(0,170,255,.5);
+border-radius:12px;
+background:rgba(0,0,0,.35);
+}
+
+.admin-user-name{font-weight:bold}
+
+.admin-user-date{
+margin-top:4px;
+color:#8edcff;
+font-size:.7rem;
+}
+
+.admin-user-admin{
+margin-top:5px;
+color:#00ff9d;
+font-size:.7rem;
+font-weight:bold;
+}
+
+.admin-empty{
+padding:20px;
+text-align:center;
+color:#8edcff;
+}
+
+.winner-card{text-align:center}
+
+.winner-label{
+color:#00ff9d;
+font-weight:bold;
+letter-spacing:5px;
+}
+
+.winner-glitch{
+margin-top:10px;
+font-size:clamp(2.5rem,14vw,6rem);
+font-weight:900;
+text-shadow:4px 0 #ff1744,-4px 0 #00ffff,0 0 20px white,0 0 50px #00aaff;
+}
+
+.winner-brainrot{
+width:180px;
+height:150px;
+object-fit:contain;
+}
+
+.winner-name{
+font-size:clamp(1.7rem,9vw,3.5rem);
+font-weight:900;
+word-break:break-word;
+}
+
+.winner-message{
+color:#8edcff;
+font-size:.9rem;
+letter-spacing:3px;
+}
+
+.close-winner{
+margin-top:25px;
+padding:13px 25px;
+border:1px solid white;
+border-radius:30px;
+color:white;
+background:rgba(0,150,255,.25);
+}
+
+.admin-button,
+.logout-button{
+position:fixed;
+right:15px;
+z-index:1300;
+padding:10px 15px;
+border-radius:20px;
+color:white;
+font-size:.7rem;
+}
+
+.admin-button{
+bottom:60px;
+display:none;
+border:1px solid #00ff9d;
+background:rgba(0,150,100,.35);
+}
+
+.admin-button.active{display:block}
+
+.logout-button{
+bottom:15px;
+border:1px solid #ff1744;
+background:rgba(180,0,40,.35);
+}
+
+@media(max-width:600px){
+.dice{grid-template-columns:repeat(2,1fr)}
+.colors{grid-template-columns:repeat(3,1fr)}
+.brainrot-card{width:140px}
+}
+</style></head><body>
+
+<div id="loginScreen">
+<div class="login-card">
+<div class="login-title">COL DICE</div>
+<div class="login-subtitle">ACCOUNT LOGIN</div>
+<input id="loginUsername" class="login-input" placeholder="Benutzername">
+<input id="loginPassword" class="login-input" type="password" placeholder="Passwort">
+<button class="login-button" onclick="login()">LOGIN</button>
+<button class="register-button" onclick="showRegister()">ACCOUNT ERSTELLEN</button>
+<div id="loginError" class="login-error"></div>
+</div>
+</div><div id="registerScreen">
+<div class="login-card">
+<div class="login-title">REGISTER</div>
+<div class="login-subtitle">CREATE YOUR COL DICE ACCOUNT</div>
+<input id="registerUsername" class="login-input" placeholder="Benutzername">
+<input id="registerPassword" class="login-input" type="password" placeholder="Passwort">
+<input id="registerPassword2" class="login-input" type="password" placeholder="Passwort wiederholen">
+<button class="login-button" onclick="registerAccount()">REGISTRIEREN</button>
+<button class="register-button" onclick="showLogin()">ZURÜCK ZUM LOGIN</button>
+<div id="registerError" class="login-error"></div>
+</div>
+</div><div id="chancesScreen">
+<button class="back-button" onclick="closeChances()">←</button>
+<div class="chances-card">
+<div class="chances-title">WIN CHANCES</div>
+<div class="chances-subtitle">COL DICE PROBABILITY SYSTEM</div>
+<div class="chance-row win"><span>1× FARBE</span><strong>38,58%</strong></div>
+<div class="chance-row recolor"><span>2× FARBE</span><strong>38,58%</strong></div>
+<div class="chance-row lose"><span>3× FARBE</span><strong>15,43%</strong></div>
+<div class="chance-row win"><span>4× FARBE</span><strong>0,08%</strong></div>
+<div class="chance-row"><span>0× FARBE</span><strong>7,72%</strong></div>
+<div class="total-win">TOTAL WIN CHANCE<strong>38,66%</strong></div>
+</div>
+</div><div id="leaderboardScreen">
+<div class="leaderboard-card">
+<button class="leaderboard-close" onclick="closeLeaderboard()">×</button>
+<div class="leaderboard-title">🏆 RANKING</div>
+<div class="leaderboard-subtitle">TRUSTED STREAMER LEADERBOARD</div>
+<div class="leaderboard-list">
+<div class="leaderboard-row">
+<div class="leaderboard-rank">1</div>
+<img src="techcozyts.png" class="leaderboard-avatar">
+<div class="leaderboard-info">
+<div class="leaderboard-name">@techcozyts</div>
+<div class="leaderboard-vouches">+500 VOUCHES</div>
+</div>
+<div class="leaderboard-badge">TRUSTED</div>
+</div>
+<div class="leaderboard-row">
+<div class="leaderboard-rank">2</div>
+<img src="72luca1.png" class="leaderboard-avatar">
+<div class="leaderboard-info">
+<div class="leaderboard-name">@72luca1</div>
+<div class="leaderboard-vouches">+50 VOUCHES</div>
+</div>
+<div class="leaderboard-badge">TRUSTED</div>
+</div>
+</div>
+</div>
+</div><div id="diceCounterScreen">
+<div class="dice-counter-card" id="diceCounterCard"><button class="dice-counter-close" onclick="closeDiceCounter()">×</button><div class="dice-counter-title">🎲 DICE COUNTER</div>
+<div class="dice-counter-subtitle">COL DICE TRACKING SYSTEM</div><div class="dice-counter-list"><div class="dice-counter-row">
+<img src="dragon.png" class="dice-counter-image">
+<div class="dice-counter-info">
+<div class="dice-counter-name">GARAMA</div>
+<div id="garamaCounterNumber" class="dice-counter-number">
+<span id="garamaCounterBig">0</span> DICE
+</div>
+</div>
+<div class="dice-counter-controls">
+<button onclick="changeCounter('garama',1)">+1</button>
+<button onclick="changeCounter('garama',-1)">−1</button>
+</div>
+</div><div class="dice-counter-row">
+<img src="garama.png" class="dice-counter-image">
+<div class="dice-counter-info">
+<div class="dice-counter-name">DRAGON</div>
+<div id="dragonCounterNumber" class="dice-counter-number">
+<span id="dragonCounterBig">0</span> DICE
+</div>
+</div>
+<div class="dice-counter-controls">
+<button onclick="changeCounter('dragon',1)">+1</button>
+<button onclick="changeCounter('dragon',-1)">−1</button>
+</div>
+</div></div><button class="register-button" onclick="openDiceHistory()">📖 DICE HISTORY</button>
+
+</div>
+</div><div id="diceHistoryScreen">
+<div class="dice-history-card">
+<button class="dice-history-close" onclick="closeDiceHistory()">×</button><div class="dice-history-title">📖 DICE HISTORY</div>
+<div class="dice-history-subtitle">MANUAL DICE TRACKING</div><div class="dice-history-form">
+<input id="historyGarama" class="dice-history-input" type="number" placeholder="GARAMA">
+<select id="historyGaramaSign" class="dice-history-input">
+<option value="+">+ PLUS</option>
+<option value="-">− MINUS</option>
+</select><input id="historyDragon" class="dice-history-input" type="number" placeholder="DRAGON">
+<select id="historyDragonSign" class="dice-history-input">
+<option value="+">+ PLUS</option>
+<option value="-">− MINUS</option>
+</select><button class="dice-history-save" onclick="saveDiceHistory()">💾 EINTRAG SPEICHERN</button>
+
+</div><div id="diceHistoryList" class="dice-history-list"></div></div>
+</div><div id="adminScreen">
+<div class="admin-card">
+<button class="admin-close" onclick="closeAdmin()">×</button>
+<div class="admin-title">🛡 ADMIN PANEL</div>
+<div class="admin-subtitle">REGISTRIERTE COL DICE ACCOUNTS</div>
+<div id="adminUsersList"></div>
+</div>
+</div><div id="winnerOverlay">
+<div class="winner-card">
+<div class="winner-label">★ WINNER ★</div>
+<div class="winner-glitch">WIN</div>
+<img id="winnerBrainrot" class="winner-brainrot">
+<div id="winnerName" class="winner-name">PLAYER</div>
+<div id="winnerMessage" class="winner-message">COLOR MATCH CONFIRMED</div>
+<button class="close-winner" onclick="closeWinner()">CONTINUE</button>
+</div>
+</div><main class="app">
+<header class="header">
+<div class="logo">COL DICE</div>
+<div class="subtitle">SYSTEM INFECTED // ROLL YOUR LUCK</div>
+<div class="live-status">● LIVE PREVIEW</div>
+</header><div class="top-buttons">
+<button class="top-button" onclick="openLeaderboard()">🏆</button>
+<button class="top-button" onclick="openChances()">?</button>
+<button class="top-button" onclick="openDiceCounter()">🎲</button>
+</div><div class="player-box">
+<div class="player-label">PLAYER USERNAME</div>
+<input id="playerName" class="player-input" placeholder="TikTok Username">
+</div><div class="dice">
+<div class="die blue" id="die1">?</div>
+<div class="die yellow" id="die2">?</div>
+<div class="die orange" id="die3">?</div>
+<div class="die purple" id="die4">?</div>
+</div><div class="color-panel">
+<div class="panel-title">PLAYER COLOR</div>
+<div class="colors">
+<button class="color-button blue" onclick="selectColor('BLUE',this)">BLUE</button>
+<button class="color-button yellow" onclick="selectColor('YELLOW',this)">YELLOW</button>
+<button class="color-button orange" onclick="selectColor('ORANGE',this)">ORANGE</button>
+<button class="color-button purple" onclick="selectColor('PURPLE',this)">PURPLE</button>
+<button class="color-button red" onclick="selectColor('RED',this)">RED</button>
+<button class="color-button green" onclick="selectColor('GREEN',this)">GREEN</button>
+</div>
+</div><div class="brainrot-title">CHOOSE BRAINROT</div><div class="brainrot-selection">
+<button class="brainrot-card" data-brainrot="Garama and Madundung" data-counter="garama">
+<span class="selected-mark">✓</span>
+<img src="dragon.png">
+</button><button class="brainrot-card" data-brainrot="Dragon Cannelloni" data-counter="dragon">
+<span class="selected-mark">✓</span>
+<img src="garama.png">
+</button>
+</div><button class="roll-button" id="rollButton" onclick="rollDice()" disabled>ROLL AGAIN</button><div id="result" class="result">SELECT BRAINROT AND COLOR</div><section class="verify-window">
+<div class="verify-title">LAST ROLL VERIFY</div><div id="lastRollColors" class="last-roll-colors">
+<div class="last-color blue">?</div>
+<div class="last-color yellow">?</div>
+<div class="last-color orange">?</div>
+<div class="last-color purple">?</div>
+</div><div class="verify-info">
+<div>MATCHES: <strong id="verifyMatches">-</strong></div>
+<div>RESULT: <strong id="verifyResult">-</strong></div>
+<div class="verify-code">CODE: <strong id="verifyCode">-</strong></div>
+</div><button class="copy-button" onclick="copyVerifyCode()">COPY CODE</button>
+<input id="verifyInput" class="verify-input" placeholder="VERIFY CODE">
+<button class="check-button" onclick="verifyCode()">CHECK CODE</button><div id="verifyMessage" class="verify-message"></div>
+</section><div class="vouch-box">
+<div class="vouch-title">VOUCHES</div>
+<div id="vouchCount" class="vouch-count">0</div>
+<div>Schreibe „Vouch“ im Chat</div>
+<input id="vouchInput" class="vouch-input" placeholder="Vouch eingeben">
+<button class="vouch-button" onclick="addVouch()">VOUCH BESTÄTIGEN</button>
+<div id="vouchMessage" class="vouch-message"></div>
+</div><div class="rules">
+<div class="win">1× FARBE = WIN</div>
+<div class="recolor">2× FARBE = RECOLOR</div>
+<div class="lose">3× FARBE = LOSE</div>
+<div class="win">4× FARBE = WIN</div>
+</div></main><button id="adminButton" class="admin-button" onclick="openAdmin()">🛡 ADMIN</button>
+<button class="logout-button" onclick="logout()">LOGOUT</button><script>
+const SUPABASE_URL="https://sfliodupxpywpdydrnfu.supabase.co";
+const SUPABASE_KEY="sb_publishable_l5b9mWGEuW5XhgC99aZmbA_t0feqTdu";
+
+async function supabaseRequest(path,options={}){
+const response=await fetch(
+SUPABASE_URL+"/rest/v1/"+path,
+{
+...options,
+headers:{
+"apikey":SUPABASE_KEY,
+"Authorization":"Bearer "+SUPABASE_KEY,
+"Content-Type":"application/json",
+"Prefer":"return=representation",
+...(options.headers||{})
+}
+}
+);
+
+if(!response.ok){
+const errorText=await response.text();
+throw new Error(errorText||"Supabase Fehler");
+}
+
+const text=await response.text();
+return text?JSON.parse(text):null;
+}
+
+const ADMIN_USERNAME="Admin Collin";
+const ADMIN_PASSWORD="adminCol3101_passwort";
+
+let currentUser=null;
+let selectedColor=null;
+let selectedBrainrot=null;
+let selectedBrainrotImage=null;
+let selectedCounterType=null;
+let lastRoll=null;
+let audioContext=null;
+
+let vouchCount=Number(localStorage.getItem("colDiceVouches")||0);
+let garamaCounter=Number(localStorage.getItem("colDiceGaramaCounter")||0);
+let dragonCounter=Number(localStorage.getItem("colDiceDragonCounter")||0);
+
+let diceHistory=JSON.parse(localStorage.getItem("colDiceHistory")||"[]");
+
+const colors=[
+{name:"BLUE",className:"blue"},
+{name:"YELLOW",className:"yellow"},
+{name:"ORANGE",className:"orange"},
+{name:"PURPLE",className:"purple"},
+{name:"RED",className:"red"},
+{name:"GREEN",className:"green"}
+];
+
+function createDiceSound(){
+try{
+if(!audioContext){
+audioContext=new(window.AudioContext||window.webkitAudioContext)();
+}
+
+if(audioContext.state==="suspended")audioContext.resume();
+
+const now=audioContext.currentTime;
+
+for(let i=0;i<12;i++){
+const start=now+i*.075+Math.random()*.025;
+const oscillator=audioContext.createOscillator();
+const gain=audioContext.createGain();
+const filter=audioContext.createBiquadFilter();
+
+oscillator.type="triangle";
+oscillator.frequency.setValueAtTime(650+Math.random()*900,start);
+oscillator.frequency.exponentialRampToValueAtTime(180+Math.random()*220,start+.045);
+
+filter.type="highpass";
+filter.frequency.value=350;
+
+gain.gain.setValueAtTime(.0001,start);
+gain.gain.exponentialRampToValueAtTime(.18,start+.005);
+gain.gain.exponentialRampToValueAtTime(.0001,start+.055);
+
+oscillator.connect(filter);
+filter.connect(gain);
+gain.connect(audioContext.destination);
+
+oscillator.start(start);
+oscillator.stop(start+.06);
+}
+
+}catch(error){
+console.log("Dice Sound konnte nicht abgespielt werden:",error);
+}
+}
+
+let winnerAudio=null;
+
+function playWinnerSound(){
+try{
+if(winnerAudio){
+winnerAudio.pause();
+winnerAudio.currentTime=0;
+}
+
+winnerAudio=new Audio("best-to-give-me.mp3");
+winnerAudio.volume=1;
+winnerAudio.play();
+
+}catch(error){
+console.log("Winner Sound konnte nicht abgespielt werden:",error);
+}
+}
+
+function stopWinnerSound(){
+if(winnerAudio){
+winnerAudio.pause();
+winnerAudio.currentTime=0;
+winnerAudio=null;
+}
+}
+
+function updateCounters(){
+document.getElementById("vouchCount").textContent=vouchCount;
+
+const garamaElement=document.getElementById("garamaCounterBig");
+const dragonElement=document.getElementById("dragonCounterBig");
+
+const garamaNumber=document.getElementById("garamaCounterNumber");
+const dragonNumber=document.getElementById("dragonCounterNumber");
+
+garamaElement.textContent=garamaCounter;
+dragonElement.textContent=dragonCounter;
+
+if(garamaCounter<0)
+garamaNumber.classList.add("negative");
+else
+garamaNumber.classList.remove("negative");
+
+if(dragonCounter<0)
+dragonNumber.classList.add("negative");
+else
+dragonNumber.classList.remove("negative");
+}
+
+function changeCounter(counterType,amount){
+
+if(counterType==="garama"){
+garamaCounter+=amount;
+localStorage.setItem("colDiceGaramaCounter",garamaCounter);
+}
+
+if(counterType==="dragon"){
+dragonCounter+=amount;
+localStorage.setItem("colDiceDragonCounter",dragonCounter);
+}
+
+updateCounters();
+}
+
+function addVouch(){
+const input=document.getElementById("vouchInput");
+const message=document.getElementById("vouchMessage");
+
+if(input.value.trim().toLowerCase()!=="vouch"){
+message.style.color="#ff1744";
+message.textContent='Bitte genau "Vouch" eingeben.';
+return;
+}
+
+vouchCount++;
+localStorage.setItem("colDiceVouches",vouchCount);
+updateCounters();
+
+input.value="";
+message.style.color="#00ff9d";
+message.textContent="✓ VOUCH GEZÄHLT";
+}
+
+/* DICE HISTORY */
+function openDiceHistory(){
+
+document.getElementById("diceHistoryScreen").classList.add("active");
+
+renderDiceHistory();
+
+}
+
+function closeDiceHistory(){
+
+document.getElementById("diceHistoryScreen").classList.remove("active");
+
+}
+
+function saveDiceHistory(){
+
+const garamaInput=document.getElementById("historyGarama");
+const dragonInput=document.getElementById("historyDragon");
+
+const garamaSign=document.getElementById("historyGaramaSign").value;
+const dragonSign=document.getElementById("historyDragonSign").value;
+
+if(garamaInput.value===""&&dragonInput.value===""){
+alert("Bitte mindestens einen Wert eintragen.");
+return;
+}
+
+let garamaValue=garamaInput.value===""?0:Number(garamaInput.value);
+let dragonValue=dragonInput.value===""?0:Number(dragonInput.value);
+
+if(garamaSign==="-"){
+garamaValue=-Math.abs(garamaValue);
+}else{
+garamaValue=Math.abs(garamaValue);
+}
+
+if(dragonSign==="-"){
+dragonValue=-Math.abs(dragonValue);
+}else{
+dragonValue=Math.abs(dragonValue);
+}
+
+const entry={
+id:Date.now(),
+date:new Date().toLocaleString("de-DE"),
+garama:garamaValue,
+dragon:dragonValue
+};
+
+diceHistory.unshift(entry);
+
+localStorage.setItem("colDiceHistory",JSON.stringify(diceHistory));
+
+garamaInput.value="";
+dragonInput.value="";
+
+renderDiceHistory();
+
+}
+
+function renderDiceHistory(){
+
+const container=document.getElementById("diceHistoryList");
+
+container.innerHTML="";
+
+if(!diceHistory||diceHistory.length===0){
+
+container.innerHTML='<div class="dice-history-empty">Noch keine History-Einträge vorhanden.</div>';
+
+return;
+
+}
+
+diceHistory.forEach(entry=>{
+
+const div=document.createElement("div");
+
+div.className="dice-history-entry";
+
+div.innerHTML=`
+<div class="dice-history-date">📅 ${escapeHTML(entry.date)}</div>
+<div class="dice-history-values">
+<div class="dice-history-garama">GARAMA: ${entry.garama>=0?"+":""}${entry.garama}</div>
+<div class="dice-history-dragon">DRAGON: ${entry.dragon>=0?"+":""}${entry.dragon}</div>
+</div>
+<button class="dice-history-delete" onclick="deleteDiceHistory(${entry.id})">🗑 EINTRAG LÖSCHEN</button>
+`;
+
+container.appendChild(div);
+
+});
+
+}
+
+function deleteDiceHistory(id){
+
+diceHistory=diceHistory.filter(entry=>entry.id!==id);
+
+localStorage.setItem("colDiceHistory",JSON.stringify(diceHistory));
+
+renderDiceHistory();
+
+}
+
+async function login(){
+
+const username=document.getElementById("loginUsername").value.trim();
+const password=document.getElementById("loginPassword").value;
+const error=document.getElementById("loginError");
+
+error.textContent="";
+
+if(username===ADMIN_USERNAME&&password===ADMIN_PASSWORD){
+currentUser={username:ADMIN_USERNAME,isAdmin:true};
+localStorage.setItem("colDiceCurrentUser",JSON.stringify(currentUser));
+enterApp();
+return;
+}
+
+try{
+
+const accounts=await supabaseRequest(
+"konten?select=*&username=ilike."+encodeURIComponent(username)
+);
+
+if(!accounts||accounts.length===0){
+error.textContent="Falscher Benutzername oder falsches Passwort.";
+return;
+}
+
+const account=accounts[0];
+
+if(account.password!==password){
+error.textContent="Falscher Benutzername oder falsches Passwort.";
+return;
+}
+
+currentUser={username:account.username,isAdmin:false};
+
+localStorage.setItem("colDiceCurrentUser",JSON.stringify(currentUser));
+
+enterApp();
+
+}catch(errorObject){
+
+console.error(errorObject);
+error.textContent="Verbindung zur Datenbank fehlgeschlagen.";
+
+}
+}
+
+function enterApp(){
+
+document.getElementById("loginScreen").style.display="none";
+document.getElementById("registerScreen").style.display="none";
+
+const adminButton=document.getElementById("adminButton");
+
+if(currentUser&&currentUser.isAdmin===true)
+adminButton.classList.add("active");
+else
+adminButton.classList.remove("active");
+}
+
+function logout(){
+
+stopWinnerSound();
+
+currentUser=null;
+
+localStorage.removeItem("colDiceCurrentUser");
+
+document.getElementById("loginScreen").style.display="flex";
+document.getElementById("registerScreen").style.display="none";
+document.getElementById("adminButton").classList.remove("active");
+document.getElementById("adminScreen").classList.remove("active");
+
+}
+
+function checkLogin(){
+
+updateCounters();
+
+const saved=localStorage.getItem("colDiceCurrentUser");
+
+if(!saved)return;
+
+try{
+
+currentUser=JSON.parse(saved);
+enterApp();
+
+}catch{
+
+localStorage.removeItem("colDiceCurrentUser");
+
+}
+}
+
+function showRegister(){
+
+document.getElementById("loginScreen").style.display="none";
+document.getElementById("registerScreen").style.display="flex";
+
+}
+
+function showLogin(){
+
+document.getElementById("registerScreen").style.display="none";
+document.getElementById("loginScreen").style.display="flex";
+
+}
+
+async function registerAccount(){
+
+const username=document.getElementById("registerUsername").value.trim();
+const password=document.getElementById("registerPassword").value;
+const password2=document.getElementById("registerPassword2").value;
+const error=document.getElementById("registerError");
+
+error.textContent="";
+
+if(username.length<3){
+error.textContent="Der Benutzername muss mindestens 3 Zeichen haben.";
+return;
+}
+
+if(password.length<4){
+error.textContent="Das Passwort muss mindestens 4 Zeichen haben.";
+return;
+}
+
+if(password!==password2){
+error.textContent="Die Passwörter stimmen nicht überein.";
+return;
+}
+
+if(username.toLowerCase()===ADMIN_USERNAME.toLowerCase()){
+error.textContent="Dieser Benutzername ist nicht verfügbar.";
+return;
+}
+
+try{
+
+const existing=await supabaseRequest(
+"konten?select=id&username=ilike."+encodeURIComponent(username)
+);
+
+if(existing&&existing.length>0){
+error.textContent="Dieser Benutzername existiert bereits.";
+return;
+}
+
+await supabaseRequest("konten",{
+method:"POST",
+body:JSON.stringify({
+username:username,
+password:password,
+created_at:new Date().toISOString(),
+is_admin:false
+})
+});
+
+alert("Account erfolgreich erstellt!");
+
+document.getElementById("registerUsername").value="";
+document.getElementById("registerPassword").value="";
+document.getElementById("registerPassword2").value="";
+
+showLogin();
+
+}catch(errorObject){
+
+console.error(errorObject);
+error.textContent="Account konnte nicht gespeichert werden.";
+
+}
+}
+
+async function openAdmin(){
+
+if(!currentUser||currentUser.isAdmin!==true){
+alert("Kein Admin-Zugriff.");
+return;
+}
+
+await renderAdminUsers();
+
+document.getElementById("adminScreen").classList.add("active");
+
+}
+
+function closeAdmin(){
+document.getElementById("adminScreen").classList.remove("active");
+}
+
+async function renderAdminUsers(){
+
+const container=document.getElementById("adminUsersList");
+
+container.innerHTML="<div class='admin-empty'>Accounts werden geladen...</div>";
+
+try{
+
+const accounts=await supabaseRequest("konten?select=*&order=id.asc");
+
+container.innerHTML="";
+
+const adminDiv=document.createElement("div");
+
+adminDiv.className="admin-user";
+
+adminDiv.innerHTML=`
+<div class="admin-user-name">🛡 ${ADMIN_USERNAME}</div>
+<div class="admin-user-date">Hauptadministrator</div>
+<div class="admin-user-admin">ADMINISTRATOR</div>
+`;
+
+container.appendChild(adminDiv);
+
+if(!accounts||accounts.length===0){
+
+const empty=document.createElement("div");
+
+empty.className="admin-empty";
+empty.textContent="Noch keine weiteren Accounts registriert.";
+
+container.appendChild(empty);
+
+return;
+
+}
+
+accounts.forEach((account,index)=>{
+
+const user=document.createElement("div");
+
+user.className="admin-user";
+
+user.innerHTML=`
+<div class="admin-user-name">👤 ${escapeHTML(account.username)}</div>
+<div class="admin-user-date">Registriert: ${escapeHTML(account.created_at||"Unbekannt")}</div>
+<div class="admin-user-admin">USER ACCOUNT #${index+1}</div>
+`;
+
+container.appendChild(user);
+
+});
+
+}catch(errorObject){
+
+console.error(errorObject);
+
+container.innerHTML="<div class='admin-empty'>Accounts konnten nicht geladen werden.</div>";
+
+}
+}
+
+function escapeHTML(text){
+
+return String(text)
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+document.querySelectorAll(".brainrot-card").forEach(card=>{
+
+card.addEventListener("click",()=>{
+
+document.querySelectorAll(".brainrot-card").forEach(other=>{
+other.classList.remove("active");
+});
+
+card.classList.add("active");
+
+selectedBrainrot=card.dataset.brainrot;
+selectedCounterType=card.dataset.counter;
+selectedBrainrotImage=card.querySelector("img").src;
+
+updateReadyStatus();
+
+});
+
+});
+
+function updateReadyStatus(){
+
+const result=document.getElementById("result");
+
+if(selectedBrainrot&&selectedColor)
+result.textContent=selectedBrainrot+" LOCKED // READY TO ROLL";
+else if(selectedBrainrot)
+result.textContent=selectedBrainrot+" SELECTED // CHOOSE COLOR";
+
+}
+
+function selectColor(colorName,button){
+
+selectedColor=colorName;
+
+document.querySelectorAll(".color-button").forEach(btn=>{
+btn.classList.remove("active");
+});
+
+button.classList.add("active");
+
+document.getElementById("rollButton").disabled=!selectedBrainrot;
+
+updateReadyStatus();
+
+}
+
+function generateCode(){
+
+const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+let code="";
+
+for(let i=0;i<8;i++){
+code+=chars[Math.floor(Math.random()*chars.length)];
+}
+
+return code.slice(0,4)+"-"+code.slice(4);
+
+}
+
+function rollDice(){
+
+if(!selectedColor||!selectedBrainrot)return;
+
+const button=document.getElementById("rollButton");
+const result=document.getElementById("result");
+const dice=document.querySelectorAll(".die");
+
+button.disabled=true;
+
+result.textContent="SYSTEM ROLLING...";
+
+createDiceSound();
+
+dice.forEach(die=>{
+die.classList.add("rolling");
+});
+
+let animationTime=0;
+
+const animation=setInterval(()=>{
+
+dice.forEach(die=>{
+
+const random=colors[Math.floor(Math.random()*colors.length)];
+
+die.className="die "+random.className+" rolling";
+die.textContent="◆";
+
+});
+
+animationTime+=100;
+
+if(animationTime>=700){
+
+clearInterval(animation);
+
+dice.forEach(die=>{
+die.classList.remove("rolling");
+});
+
+finishRoll();
+
+}
+
+},100);
+
+function finishRoll(){
+
+const rollResults=[];
+let matches=0;
+
+dice.forEach(die=>{
+
+const random=colors[Math.floor(Math.random()*colors.length)];
+
+rollResults.push(random.name);
+
+die.className="die "+random.className;
+die.textContent="◆";
+
+if(random.name===selectedColor)
+matches++;
+
+});
+
+/* COUNTER WIRD HIER NICHT MEHR AUTOMATISCH ERHÖHT */
+
+let outcome;
+
+if(matches===1||matches===4)
+outcome="WIN";
+else if(matches===2)
+outcome="RECOLOR";
+else if(matches===3)
+outcome="LOSE";
+else
+outcome="NO MATCH";
+
+lastRoll={
+
+code:generateCode(),
+player:document.getElementById("playerName").value.trim()||"UNKNOWN",
+brainrot:selectedBrainrot,
+playerColor:selectedColor,
+dice:rollResults,
+matches:matches,
+outcome:outcome
+
+};
+
+updateVerifyWindow();
+
+if(outcome==="WIN"){
+
+result.textContent=matches+"× COLOR — WIN";
+result.style.color="#00ff9d";
+
+playWinnerSound();
+showWinner();
+
+}else if(outcome==="RECOLOR"){
+
+result.textContent="2× COLOR — RECOLOR";
+result.style.color="#fff000";
+button.disabled=false;
+
+}else if(outcome==="LOSE"){
+
+result.textContent="3× COLOR — LOSE";
+result.style.color="#ff1744";
+button.disabled=false;
+
+}else{
+
+result.textContent="NO MATCH — TRY AGAIN";
+result.style.color="white";
+button.disabled=false;
+
+}
+
+}
+
+}
+
+function updateVerifyWindow(){
+
+const container=document.getElementById("lastRollColors");
+
+container.innerHTML="";
+
+lastRoll.dice.forEach(colorName=>{
+
+const color=colors.find(c=>c.name===colorName);
+
+const div=document.createElement("div");
+
+div.className="last-color "+color.className;
+div.textContent=color.name;
+
+container.appendChild(div);
+
+});
+
+document.getElementById("verifyMatches").textContent=lastRoll.matches;
+document.getElementById("verifyResult").textContent=lastRoll.outcome;
+document.getElementById("verifyCode").textContent=lastRoll.code;
+
+}
+
+function copyVerifyCode(){
+
+if(!lastRoll)return;
+
+navigator.clipboard.writeText(lastRoll.code);
+
+document.getElementById("verifyMessage").textContent="CODE COPIED";
+
+}
+
+function verifyCode(){
+
+const input=document.getElementById("verifyInput").value.trim().toUpperCase();
+const message=document.getElementById("verifyMessage");
+
+if(!lastRoll){
+
+message.textContent="Noch kein Roll vorhanden.";
+
+return;
+
+}
+
+if(input===lastRoll.code){
+
+message.style.color="#00ff9d";
+message.textContent="✓ VERIFIED — ROLL STIMMT ÜBEREIN";
+
+}else{
+
+message.style.color="#ff1744";
+message.textContent="✕ CODE NICHT GEFUNDEN";
+
+}
+
+}
+
+function showWinner(){
+
+document.getElementById("winnerName").textContent=
+document.getElementById("playerName").value.trim()||"PLAYER";
+
+document.getElementById("winnerBrainrot").src=selectedBrainrotImage;
+
+document.getElementById("winnerMessage").textContent=
+selectedBrainrot+" // COLOR MATCH CONFIRMED";
+
+document.getElementById("winnerOverlay").classList.add("active");
+
+}
+
+function closeWinner(){
+
+stopWinnerSound();
+
+document.getElementById("winnerOverlay").classList.remove("active");
+
+document.getElementById("rollButton").disabled=false;
+
+}
+
+function openChances(){
+
+document.getElementById("chancesScreen").classList.add("active");
+
+}
+
+function closeChances(){
+
+document.getElementById("chancesScreen").classList.remove("active");
+
+}
+
+function openLeaderboard(){
+
+document.getElementById("leaderboardScreen").classList.add("active");
+
+}
+
+function closeLeaderboard(){
+
+document.getElementById("leaderboardScreen").classList.remove("active");
+
+}
+
+function openDiceCounter(){
+
+const screen=document.getElementById("diceCounterScreen");
+const card=document.getElementById("diceCounterCard");
+
+screen.classList.add("active");
+
+if(!card.dataset.positioned){
+
+card.style.left="50%";
+card.style.top="50%";
+card.style.transform="translate(-50%,-50%)";
+
+card.dataset.positioned="true";
+
+}
+
+}
+
+function closeDiceCounter(){
+
+document.getElementById("diceCounterScreen").classList.remove("active");
+
+}
+
+/* DICE COUNTER VERSCHIEBBAR */
+(function(){
+
+const card=document.getElementById("diceCounterCard");
+
+let isDragging=false;
+let startX=0;
+let startY=0;
+let startLeft=0;
+let startTop=0;
+
+function startDrag(event){
+
+if(event.target.closest("button"))return;
+
+isDragging=true;
+
+card.classList.add("dragging");
+
+const point=event.touches?event.touches[0]:event;
+
+const rect=card.getBoundingClientRect();
+
+startX=point.clientX;
+startY=point.clientY;
+startLeft=rect.left;
+startTop=rect.top;
+
+card.style.transform="none";
+
+event.preventDefault();
+
+}
+
+function drag(event){
+
+if(!isDragging)return;
+
+const point=event.touches?event.touches[0]:event;
+
+let newLeft=startLeft+(point.clientX-startX);
+let newTop=startTop+(point.clientY-startY);
+
+const maxLeft=window.innerWidth-card.offsetWidth;
+const maxTop=window.innerHeight-card.offsetHeight;
+
+newLeft=Math.max(0,Math.min(newLeft,maxLeft));
+newTop=Math.max(0,Math.min(newTop,maxTop));
+
+card.style.left=newLeft+"px";
+card.style.top=newTop+"px";
+
+}
+
+function stopDrag(){
+
+isDragging=false;
+
+card.classList.remove("dragging");
+
+}
+
+card.addEventListener("mousedown",startDrag);
+document.addEventListener("mousemove",drag);
+document.addEventListener("mouseup",stopDrag);
+
+card.addEventListener("touchstart",startDrag,{passive:false});
+document.addEventListener("touchmove",drag,{passive:false});
+document.addEventListener("touchend",stopDrag);
+
+})();
+
+checkLogin();
+</script></body></html>
